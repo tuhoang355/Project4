@@ -32,7 +32,12 @@ staticDir = ["static", "../assets/others"]               # static directories
 [Permalinks]                                          #### Permalinks Info (https://gohugo.io/content-management/urls/#permalinks)
   posts = ":year/:month/:filename"
 
-[menu]                                                #### Menu Info
+[menu]
+  [[menu.main]]
+  identifier = "resume"
+  name = "Resume"
+  url= "static"
+  weight = 1
   [[menu.main]]
     identifier = "blog"
     name = "Blog"
@@ -74,8 +79,7 @@ staticDir = ["static", "../assets/others"]               # static directories
                                                       #### Footer CopyRight Info
   since = 2018                                           # Site creation time
   icp = ''                                               # ICP info only in China (HTML format is allowed)
-  license= '<a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a>'
-                                                         # license info (HTML format is allowed)
+  license=                                              # license info (HTML format is allowed)
   gitRepo = ""                                           # public git repo url to link lastmod git commit only then enableGitInfo is true
 
   linkToMarkdown = true                                  # whether to show link to Raw Markdown content of the post
@@ -131,8 +135,8 @@ staticDir = ["static", "../assets/others"]               # static directories
 
   [params.image]                                         # Website Image Info just for SEO
     url = "cover.png"
-    width = 800
-    height = 600
+    width = 1000
+    height = 1600
 
   [params.gitalk]                                        # Gittalk Comment Config (https://github.com/gitalk/gitalk)
     owner = ""

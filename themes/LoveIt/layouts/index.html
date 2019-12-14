@@ -13,7 +13,7 @@
             {{ range $paginator.Pages -}}
                 {{ .Render "summary" -}}
             {{ end -}}
-
+<a href="/MyResume.pdf"> 
             {{ partial "paginator.html" . -}}
         </div>
     {{- else -}}

@@ -10,4 +10,3 @@ When it comes to education, I graduated from Benjamin O. Davis Sr. High School i
 As for working experience and skills, I consider myself above average when it comes to the technologies or anything having to deal with computer. I am currently an Assistant Coordinator for the Teaching Assistant Program and as well as an Assistant System Administrator at my Local Parish in Houston. 
 
 
-

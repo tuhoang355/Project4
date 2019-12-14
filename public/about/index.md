@@ -7,5 +7,43 @@ When it comes to education, I graduated from Benjamin O. Davis Sr. High School i
 
 As for working experience and skills, I consider myself above average when it comes to the technologies or anything having to deal with computer. I am currently an Assistant Coordinator for the Teaching Assistant Program and as well as an Assistant System Administrator at my Local Parish in Houston. 
 
+Resume
+
+TU
+HOANG
+14139 Sunrise Arbor Lane Cypress, Texas 77429
+(832)310-9049
+Tuhoang355@utexas.edu
+
+Objective
+To gain experience that will enhance my personal and professional skills.
+Education
+August 2012- May 2016 	Benjamin O. Davis Senior High School
+			          	      High School Diploma
+
+August 2016-Present     Biology BSA-Business Administration Minor,                          Austin, The University of Texas at Austin
+			                  Senior, Pre-Med
+			                  Total Hours of Credit: 107
+			                  UT Total Hours of Credit: 64
+		
+Experience
+Our lady of La Vang Parish
+
+Assistant Coordinator of Teaching Assistant Program
+Oversee the Teaching Assistant Program, coordinate weekly activities, coordinate teaching schedules.
+Assistant System Administrator
+Data entry and run the grading system that the Catholic school uses. 
+Clubs and Volunteering
+University of Texas at Austin
+Lions Club (August 2016-2019)
+-Volunteering at multiple volunteering events on and off campus
+
+Our Lady of La Vang Parish
+-	(August 2016-Present)
+-	Volunteer weekly at the church catholic school
+-	Gain experience in teaching, leadership, teamwork, and overall management process.  
+	
+
+
 
 
