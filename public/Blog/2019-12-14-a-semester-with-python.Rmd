@@ -1,0 +1,93 @@
+---
+title: A Semester with Python
+author: 'Tu Hoang '
+date: '2019-12-14'
+slug: a-semester-with-python
+categories: []
+tags: []
+lastmod: '2019-12-14T05:34:18-06:00'
+description: ''
+show_in_homepage: yes
+show_description: no
+license: ''
+featured_image: ''
+featured_image_preview: ''
+comment: yes
+toc: no
+autoCollapseToc: yes
+math: no
+---
+
+<!--more-->
+Here are some example of what I did with Python during my time in SDS348.
+
+Python is one of the most popular languages used in the computer science realm. Since it can get complex real quick, it is important to first get the hang of some of the more basic codes. Here are some basic codes to get you adjusted to Python
+```{python}
+print("hello world")
+```
+By importing numpy as np, we can even use python to perform basic calculations! Python can also be used to assign values to variables.This is why Python is so popular!!
+
+```{python}
+import numpy as np
+2+2
+```
+
+
+```{python}
+4+4
+
+three = 3
+two = 2
+two * three
+
+```
+Here are some more Challenging python codes.
+```{python}
+my_seq1 = "ATCATCATG"
+my_seq2 = "CAGCCCAATCAGGCTCTACTGCCACTAAACTTACGCAGGATATATTTACGCCGACGTACT"
+
+def count_kmers(read, k):
+    
+ 
+    counts = {}
+  
+    num_kmers = len(read) - k + 1
+   
+    for i in range(num_kmers):
+     
+        kmer = read[i:i+k]
+      
+        if kmer not in counts:
+            counts[kmer] = 0
+
+        counts[kmer] += 1
+ 
+    return counts
+
+# my_seq1
+count_kmers("ATCATCATG",3)
+
+```
+```{python}
+def count_kmers(read, k):
+    
+ 
+    counts = {}
+  
+    num_kmers = len(read) - k + 1
+   
+    for i in range(num_kmers):
+     
+        kmer = read[i:i+k]
+      
+        if kmer not in counts:
+            counts[kmer] = 0
+
+        counts[kmer] += 1
+ 
+    return counts
+
+count_kmers("CAGCCCAATCAGGCTCTACTGCCACTAAACTTACGCAGGATATATTTACGCCGACGTACT",3)
+```
+This code chunk was used to find k-mers of certain sequences. So as you can see, Python can be use in many different ways. This revolutionary coding language makes things easier for people new to coding and even experienced one as well.
+

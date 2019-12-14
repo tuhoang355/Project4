@@ -1,0 +1,340 @@
+---
+output:
+  html_document: default
+  pdf_document: default
+---
+#Title: SDS 348 Project: 2 Modeling, Testing, and Predicting
+#Author: Tu Hoang (tah2957)
+#Date: 11/27/2019
+---
+```{r global_options, include=FALSE}
+library(latticeExtra)
+library(fivethirtyeight)
+library(knitr)
+library(tidyverse)
+library(tidyr)
+library(dplyr)
+library(devtools)
+library(vegan)
+library(lmtest)
+library(sandwich)
+library(gvlma)
+library(plotROC)
+library(glmnet)
+
+```{R}
+bad_drivers2<-bad_drivers%>%pivot_longer(cols = c("insurance_premiums","losses"), 
+names_to = "PPIL",
+values_to="Cost(IP & L)")
+glimpse(bad_drivers2)
+
+MTP2<-full_join(bad_drivers2,USCancerRates,by="state")%>%glimpse()
+
+MTP3<-MTP2%>%mutate(`PPIL`, "PIL" = with(MTP2,ifelse(`PPIL` == "insurance_premiums", yes = 1, no = 0)))%>%na.omit()%>%glimpse()
+```
+# Introduction
+#The two dataset that I have decided to use for this Explorartory Data Anaylsis is a dataset named bad_drivers and another data set named USCancerRates. At first glance, these two dataset don't have anything in common since one dealt with Cancer rates and the other dealt with factors contributing to inattentive drivers. I've decided to use this two dataset because I wanted to see if there was a plausible correction between inattentive drivers and cancer rates. Although, I know that there will not be a potential association data wise, these two dataset does show two of the top causes of death in America. 
+#The USCancerRates dataset contain 3041 observations of 8 variables. Those variables are rate.male, LCL95.male, UCL.95.male,rate.female, LCL.95 female, UCL.95 female, UCL.95 female, state, and county. The data was obtained by the National Cancer Institute and made public through The National Vital Statistics System. I am instesting in this dataset because I love doing research on cancer. The second dataset involves bad drivers. It contains 51 rows of observation involving 8 variables. The variables are state, num_drivers, perc_speeding,perc_alcohol,perc_not_distracted, perc_no_pervious,insurance_premiums, and losses. The data came from the story "Dear Mona, which state has the worst drivers?". I'm interested in this dataset because I see bad drivers everyday and I want to see if there a correlation between bad driving and getting cancer.
+---
+# MANOVA Testing
+```{R}
+ggplot(MTP3, aes(x =rate.female, y = rate.male)) +
+geom_point(alpha = .5) + geom_density_2d(h=2) + coord_fixed() + facet_wrap(~PPIL)
+
+covmats<-MTP3%>%group_by(PPIL)%>%do(covs=cov(.[2:3])) 
+for(i in 1:3){print(covmats$covs[i])}
+
+man1<-manova(cbind(rate.female,rate.male)~PPIL, data=MTP3)
+summary(man1)
+```
+# After running the MANOVA test, the results was not signifant. The p-value was 1, which was higher than 0.05. Since the result was not signifiant, further testing was not needed. However, in the event that the result from the MANOVA test was significant, the following tests would have been conducted. Since there are two numeric response variables with a categorical predictor variable with two level, there will be two anova test conducted. No t-test would be needed because the anova test would have told you that the two group differed. In total, three test will be conducted; one MANOVA, and 2 ANOVA. The probablity of at least one type 1 error is equal to alpha, which is 0.05. 
+---
+# Randomization Test
+```{R}
+rate.male1<-c(363.7,345.7,340.7,335.9,330.1,328.1,327.9,327.4,323.6,321.4)
+rate.female1<-c(151.0,140.5,182.3,185.3,172.0,124.1,174.2,157.7,184.5,161.4)
+
+rrmf<-data.frame(condition=c(rep("rate.male1",10),rep("rate.female1",10)),time=c(rate.male1,rate.female1))
+head(rrmf)
+
+ggplot(rrmf,aes(time,fill=condition))+geom_histogram(bins=6.5)+facet_wrap(~condition,ncol=2)+theme_classic()
+
+rand_dist<-vector()
+
+rrmf%>%group_by(condition)%>%summarize(s=sd(time))%>%summarize(diff(s))
+
+for(i in 1:5000){ 
+new<-data.frame(time=sample(rrmf$time),condition=rrmf$condition)
+rand_dist[i]<-mean(new[new$condition=="rate.female1",]$time)-
+              mean(new[new$condition=="rate.male1",]$time)
+}
+
+mean(rand_dist<- -7.612046)*2
+
+{hist(rand_dist,main="",ylab=""); abline(v = -7.612046,col="red")}
+
+mean(rand_dist>15.22409)*2
+
+t.test(data=rrmf,time~condition)
+```
+# Ho: The rate of male is more significant than the rate of female. Ha: The rate of male is not significant than the rate of famle. I started the randomization test by making two new vectors. I called the first vector rate.female1 and the second vector rate.male1. The first vector contained the first 10 values of rate.female from the MTP3 dataset. The second vector contained the first 10 values of rate.male from the MTP3 dataset. After doing the randominzation test, the p-value was 0. This is common to have. I also did a Welch Two Sample T-test with the two vectors. The p-value was 4.789e-13. The p-value after the t-test was 4.789e-13 compared to 0 from the randomization test. 
+---
+# Linear Regression Model
+```{R}
+MTP3$rate.male_c<-MTP3$rate.male-mean(MTP3$rate.male)
+MTP3$num_drivers_c<-MTP3$num_drivers-mean(MTP3$num_drivers)
+
+fit<-lm(rate.female~rate.male_c*num_drivers_c,data = MTP3)
+summary(fit)
+
+new1<-MTP3
+new1$rate.male_c<-mean(MTP3$rate.male_c)
+new1$mean<-predict(fit,new1)
+new1$rate.male_c<-mean(MTP3$rate.male_c)+sd(MTP3$rate.male_c)
+new1$plus.sd<-predict(fit,new1)
+new1$rate.male_c<-mean(MTP3$rate.male_c)-sd(MTP3$rate.male_c)
+new1$minus.sd<-predict(fit,new1)
+newint<-new1%>%select(rate.female,num_drivers_c,mean,plus.sd,minus.sd)%>%gather(rate.male,value,-rate.female,-num_drivers_c)
+
+
+mycols<-c("#619CFF","#F8766D","#00BA38")
+names(mycols)<-c("-1 sd","mean","+1 sd")
+mycols=as.factor(mycols)
+
+ggplot(MTP3,aes(rate.male_c,num_drivers_c,rate.female),group=mycols)+geom_point()+geom_line(data=new1,aes(y=mean,color="mean"))+geom_line(data=new1,aes(y=plus.sd,color="+1 sd"))+geom_line(data=new1,aes(y=minus.sd,color="-1 sd"))+scale_color_manual(values=mycols)+labs(color="rate.female (cont)")+theme(legend.position=c(.9,.2))
+
+
+resRM<-lm(rate.female~rate.male_c,data = MTP3)$residuals
+resUCL<-lm(rate.female~num_drivers_c,data = MTP3)$residuals
+coef(lm(resRM~resUCL))
+coef(lm(rate.male~num_drivers_c+rate.female,data = MTP3))
+
+resids<-fit$residuals 
+fitvals<-fit$fitted.values
+
+ggplot()+geom_point(aes(fitvals,resids))+geom_hline(yintercept=0, col="red")
+bptest(fit)
+
+ggplot()+geom_histogram(aes(resids),bins=20)
+ggplot()+geom_qq(aes(sample=resids))+geom_qq_line(aes(sample=resids), color='red')
+
+ks.test(resids, "pnorm", sd=sd(resids))
+
+coeftest(fit)[,1:2]
+coeftest(fit, vcov=vcovHC(fit))[,1:2]
+
+
+SST <- sum((MTP3$rate.female-mean(MTP3$rate.female))^2)
+SSR <- sum((fit$fitted.values-mean(MTP3$rate.female))^2) 
+SSE <- sum(fit$residuals^2) 
+
+SSR/SST
+
+summary(fit)$r.sq
+```
+# When a linear regression model was conducted with the response variable rate.female. The coefficients was the rate.female, rate.male_c, and num_drivers_c; both of which was mean centered because they are numeric variables. The final coefficient was rate.male_c:num_drivers_c; which was the interaction between the two predictor variables. When speaking about the coefficients estimate, the first row is the intercept; it is the expected values of what the "number of driver"" and "rate.male" should be in regards to rate.female. The following rows after the intercept are the slopes. The slopes indicates the effect that the predictor variables have on the response variable; in this case the rate.female. The results of the linear regression model are as followed; the intercept, rate.male_c, and num_drivers_c were the only significant coefficient with a p-value less than 0.05. The last coefficients, rate.male_c:num_drivers_c was the only coefficient that was not significant because it had a p-value of 0.6654. The interaction plot shows a cluster of points between -200 and 200. When looking at linearity and homoskedasticity graphically, both looked okay. But, the Breusch-Pagan test was conducted as well to confirmed that the assumption was met. With a p-value of 1.8e-08, the assumption was acceptable. When checking on the normality, both ggplot does look normal as well. But, a Kolmogorov-Smirnov Test was conducted as well to confirmed that the assumption was met. The p-value was less than 0.05; which mean that the assumption was met. After conducting the coeftest for the normal-theory SEs and Robust standard errors, it is found that the estimate for both normal-theory SEs and robust standard errors are the same. However, there were some changes in the Std. Error between the normal-theory SEs and robust standard errors. Compared to the normal-theory SEs, the robust standard errors had a slighty higher standard error for 3 of the 4 coefficient. Those coefficients were Intercept, rate.male_c, and rate.male_c:num_drivers_c. The proportion of the variation in the outcome of the model was 0.1894397.
+---
+# Rerun Regression Model
+```{R}
+fit<-lm(rate.female~rate.male_c*num_drivers_c,data = MTP3)
+summary(fit)
+
+coeftest(fit)[,1:2]
+coeftest(fit, vcov=vcovHC(fit))[,1:2]
+
+
+samp_distn<-replicate(5000,{
+  boot_dat<-boot_dat<-MTP3[sample(nrow(MTP3),replace = TRUE),]
+  fit<-lm(rate.female~rate.male_c*num_drivers_c,data = boot_dat)
+  coef(fit)
+})
+
+samp_distn%>%t%>%as.data.frame%>%summarize_all(sd)
+
+samp_distn%>%t%>%as.data.frame%>%gather%>%group_by(key)%>% summarize(lower=quantile(value,.025), upper=quantile(value,.975))
+
+
+fit2<-lm(rate.female ~ rate.male_c * num_drivers_c, data=MTP3) 
+resids<-fit2$residuals 
+fitted<-fit2$fitted.values
+
+resid_resamp<-replicate(5000,{ 
+  new_resids<-sample(resids,replace=TRUE) 
+  newdat<-MTP3 
+  newdat$new_y<-fitted+new_resids
+fit2<-lm(new_y ~ rate.male_c * num_drivers_c, data = newdat)
+coef(fit2)
+})
+
+resid_resamp%>%t%>%as.data.frame%>%summarize_all(sd)
+resid_resamp%>%t%>%as.data.frame%>%gather%>%group_by(key)%>% summarize(lower=quantile(value,.025), upper=quantile(value,.975))
+
+
+coeftest(fit2)[,1:2]
+coeftest(fit2, vcov=vcovHC(fit2))[,1:2]
+
+samp_distn%>%t%>%as.data.frame%>%summarize_all(sd)
+resid_resamp%>%t%>%as.data.frame%>%summarize_all(sd)
+```
+# After rerunning the regression model, there were no changes in the SEs in the rerunned model compared to the original SEs and the robust SEs. Both regression model had similar output. There were not a significant different in the p-value either given that the output for both model were really similar. 
+---
+# Logistic Regression Model
+```{R}
+
+MTP3$outcome<-factor(MTP3$PPIL,levels=c("insurance_premiums","losses"))
+
+fit3<-glm(PIL~rate.male+rate.female+perc_not_distracted,data = MTP3,family = binomial(link = "logit"))
+summary(fit3)
+
+coeftest(fit3)
+coef(fit3)%>%round(5)%>%data.frame
+coef(fit3)%>%exp%>%round(5)%>%data.frame
+
+exp(coef(fit3))
+
+odds2prob<-function(odds){odds/(1+odds)}
+
+odds2prob(-31.2553253342)
+
+pca1<-princomp(MTP3[c('rate.male','rate.female','perc_not_distracted')])
+MTP3$predictor<-pca1$scores[,1]
+MTP3$prob<-predict(fit3,type="response")
+
+ggplot(MTP3, aes(predictor,prob))+geom_point(aes(color=outcome),alpha=.5,size=3)
+
+tdat<-MTP3%>%mutate(prob=predict(fit3,type = "response"),prediction=ifelse(prob>.5,1,0))
+classify<-tdat%>%transmute(prob,prediction,truth=PIL)
+
+
+# Confusion Table and Calculations
+table(prediction=classify$prediction,truth=classify$truth)%>%addmargins()
+
+# Accurary
+(940+2028)/5936
+# Sensitivity(TPR)
+(2028/2968)
+# Specificity(TNR)
+(940/2968)
+#Precision (PPV)
+(2028/4056)
+
+# Generating Logit vs. Density Plot
+logit<-function(p)log(odds(p))
+
+tdat$logit<-predict(fit3)
+tdat$outcome<-factor(tdat$outcome,levels=c("insurance_premiums","losses"))
+ggplot(tdat,aes(logit, fill=outcome))+geom_density(alpha=.3)+
+  geom_vline(xintercept=0,lty=2)
+
+# Generating ROC curve and Calculating AUC 
+sens<-function(p,data=tdat, y=PIL) mean(tdat[tdat$PIL==1,]$prob>p)
+spec<-function(p,data=tdat, y=PIL) mean(tdat[tdat$PIL==0,]$prob<p)
+
+sensitivity<-sapply(seq(0,1,.01),sens,tdat)
+specificity<-sapply(seq(0,1,.01),spec,tdat)
+
+ROC1<-data.frame(sensitivity,specificity,cutoff=seq(0,1,.01))
+ROC1%>%gather(key,rate,-cutoff)%>%ggplot(aes(cutoff,rate,color=key))+geom_path()+ geom_vline(xintercept=c(.1,.5),lty=2,color="gray50")
+
+ROC1$TPR<-sensitivity 
+ROC1$FPR<-1-specificity
+ROC1%>%ggplot(aes(FPR,TPR))+geom_path(size=1.5)+geom_segment(aes(x=0,y=0,xend=1,yend=1),lty=2)+ scale_x_continuous(limits = c(0,1))
+
+ROCplot<-ggplot(tdat)+geom_roc(aes(d=PIL,m=prob), n.cuts=0)
+ROCplot
+
+calc_auc(ROCplot)
+
+# K10 Fold CV
+tdat1= subset(tdat, select = -c(county))
+
+
+class_diag<-function(probs,truth){
+tab<-table(factor(probs>.5,levels=c("FALSE","TRUE")),truth) 
+acc=sum(diag(tab))/sum(tab)
+sens=tab[2,2]/colSums(tab)[2]
+spec=tab[1,1]/colSums(tab)[1]
+ppv=tab[2,2]/rowSums(tab)[2]
+if(is.numeric(truth)==FALSE & is.logical(truth)==FALSE) truth<-as.numeric(truth)-1
+  #CALCULATE EXACT AUC
+ord<-order(probs, decreasing=TRUE)
+probs <- probs[ord]; truth <- truth[ord]
+TPR=cumsum(truth)/max(1,sum(truth)) 
+FPR=cumsum(!truth)/max(1,sum(!truth))
+dup<-c(probs[-1]>=probs[-length(probs)], FALSE) 
+TPR<-c(0,TPR[!dup],1); FPR<-c(0,FPR[!dup],1)
+n <- length(TPR)
+auc<- sum( ((TPR[-1]+TPR[-n])/2) * (FPR[-1]-FPR[-n]) )
+data.frame(acc,sens,spec,ppv,auc)
+}
+
+
+set.seed(1234)
+k = 10
+
+data <- tdat1[sample(nrow(tdat1)), ]
+folds <- cut(seq(1:nrow(tdat1)), breaks = k, labels = F)
+diags <- NULL
+
+for (i in 1:k) {
+    train <- data[folds != i, ]
+    test <- data[folds == i, ]
+    truth <- test$PIL
+    fit5 <- glm(PIL ~ ., data = train, family = "binomial"(link = "logit"))
+    probs2 <- predict(fit5, newdata = test, type = "response")
+    diags <- rbind(diags, class_diag(probs2, truth))
+}
+apply(diags, 2, mean)
+```
+#  After running the logistic regression, the coefficients that was intercept, rate.male, rate.female, and perc_not_distracted. Only the intercept and rate.female had a negative value, while rate.male, and perc_not_distracted had positive value. All of the coefficients had a p-value of one. This mean that they were not significant. When calculating the accuracy, sensitivity, specificity, and recall, the following were the results. The accuracy was 0.5, the sensitivity was 0.6832884, the specificity was 0.3167116, and the recall was 0.5. After generating a ROC curve and calculating the AUC, the result was really bad. The AUC was 0.5, which on the scale is really bad. This probably means that there was a set of random data values which are not able to distinguish between true and false. After doing the k-fold CV, Accuracy, Sensitivity, and Recall all had a value of 1. 
+---
+# LASSO
+```{R}
+# Lasso
+x = model.matrix(PIL~.,tdat1)[,-1]
+y<-as.matrix(tdat1$PIL)
+
+cv<-cv.glmnet(x,y,family="binomial",)
+glimpse(cv)
+
+lasso<-glmnet(x,y,family="binomial",lambda=cv$lambda.1se)
+coef(lasso)
+glimpse(lasso)
+
+prob<-predict(fit,type="response")
+pred<-ifelse(prob>.5,1,0)
+
+table(predictions=pred,truth=tdat1$PIL)
+
+# 10-fold CV
+
+set.seed(1234)
+k=10
+
+data1<-tdat1[sample(nrow(tdat1)),]
+folds<-cut(seq(1:nrow(tdat1)),breaks=k,labels=F)
+
+diags2<-NULL
+for(i in 1:k){
+train2<-data1[folds!=i,]
+test2<-data1[folds==i,]
+truth2<-test$PIL
+fit6<- glm(PIL~PPIL+outcome,data=train,family=binomial(link="logit"))
+probs2<- predict(fit6, newdata=test, type="response")
+diags2<-rbind(diags2,class_diag(probs2,truth2))}
+
+apply(diags2,2,mean)
+
+
+```
+# After running the LASSO test, PPILlosses and outcomelosses were retained because they were non-zero values. The lambda.1se: number was 0.000677. When conducting the 10-fold CV, the ACC, Sens, spec, ppv, and auc had a value of 1. When compared to those values in question 5, the values obtained in this 10-fold CV were identical to the other values.
+---
+```{R, echo=F}
+## DO NOT DELETE THIS CHUNK!
+sessionInfo()
+Sys.time()
+Sys.info()
+```
+
+
+

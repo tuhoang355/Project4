@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <title> | Final SDS348 Project-My Website</title><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noodp" />
+<meta name="Description" content="LoveIt Theme Demo">
+<link rel="prev" href="/project2/" />
+<link rel="canonical" href="/project1/" />
+<link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+<meta name="msapplication-TileColor" content="#da532c">
+<meta name="theme-color" content="#ffffff">
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content=""/>
+<meta name="twitter:description" content="#Title: SDS 348 Project: 1 Exploratory Data Analysis #Author: Tu Hoang (tah2957) #Date: 10/20/2019 —
+Introduction The two dataset that I have decided to use for this Explorartory Data Anaylsis is a dataset named bad_drivers and another data set named USCancerRates. At first glance, these two dataset don’t have anything in common since one dealt with Cancer rates and the other dealt with factors contributing to inattentive drivers. I’ve decided to use this two dataset because I wanted to see if there was a plausible correction between inattentive drivers and cancer rates."/>
+<script type="application/ld+json">
+    {
+    "@context": "http://schema.org",
+    "@type": "BlogPosting",
+    "headline": "",
+    "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "\/project1\/"
+    },
+    
+        "image": {
+            "@type": "ImageObject",
+            "url": "\/cover.png",
+            "width":  800 ,
+            "height":  600 
+        },
+    
+    "genre": "page",
+    
+    "wordcount":  3510 ,
+    "url": "\/project1\/",
+    
+    
+    
+        "license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.",
+    
+    
+        "publisher": {
+            "@type": "Organization",
+            "name": "XXXX",
+            "logo": {
+            "@type": "ImageObject",
+            "url": "\/logo.png",
+            "width":  127 ,
+            "height":  40 
+            }
+        },
+    
+    
+    "description": ""
+    }
+    </script>
+<link rel="stylesheet" href="/css/style.min.css">
+<link rel="stylesheet" href="/css/lib/fontawesome-free/all.min.min.css">
+
+<link rel="stylesheet" href="/css/lib/animate/animate.min.min.css">
+
+    </head>
+    <body>
+        <script>
+            window.isDark = (window.localStorage && window.localStorage.getItem('theme')) === 'dark';
+            window.isDark && document.body.classList.add('dark-theme');
+        </script>
+        <div class="wrapper">
+            <nav class="navbar">
+    <div class="navbar-container">
+        <div class="navbar-header animated bounceIn">
+            <a href="/">Final SDS348 Project-My Website</a>
+        </div>
+        <div class="navbar-menu">
+            
+            
+                <a class="menu-item" href="/blog" title="">Blog</a>
+            
+                <a class="menu-item" href="/Project1" title="">Project1</a>
+            
+                <a class="menu-item" href="/Project2" title="">Project2</a>
+            
+                <a class="menu-item" href="/about" title="">About Me</a>
+            
+            <a href="javascript:void(0);" class="theme-switch"><i class="fas fa-adjust fa-rotate-180 fa-fw"></i></a>
+        </div>
+    </div>
+</nav>
+<nav class="navbar-mobile">
+     <div class="navbar-container">
+        <div class="navbar-header">
+            <div class="navbar-header-title animated bounceIn">
+                <a href="/">Final SDS348 Project-My Website</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="navbar-menu" id="mobile-menu">
+            
+            
+                <a class="menu-item" href="/blog" title="">Blog</a>
+            
+                <a class="menu-item" href="/Project1" title="">Project1</a>
+            
+                <a class="menu-item" href="/Project2" title="">Project2</a>
+            
+                <a class="menu-item" href="/about" title="">About Me</a>
+            
+            <a href="javascript:void(0);" class="theme-switch"><i class="fas fa-adjust fa-rotate-180 fa-fw"></i></a>
+        </div>
+    </div>
+</nav><main class="main">
+                <div class="container">
+                    
+    <div class="post-warp single">
+        <h1 class="post-title animated pulse faster"></h1>
+        <div class="post-content">
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+
+
+<p>#Title: SDS 348 Project: 1 Exploratory Data Analysis
+#Author: Tu Hoang (tah2957)
+#Date: 10/20/2019
+—</p>
+<p>Introduction
+The two dataset that I have decided to use for this Explorartory Data Anaylsis is a dataset named bad_drivers and another data set named USCancerRates. At first glance, these two dataset don’t have anything in common since one dealt with Cancer rates and the other dealt with factors contributing to inattentive drivers. I’ve decided to use this two dataset because I wanted to see if there was a plausible correction between inattentive drivers and cancer rates. Although, I know that there will not be a potential association data wise, these two dataset does show two of the top causes of death in america.
+The USCancerRates dataset contain 3041 observations of 8 variables. Those variables are rate.male, LCL95.male, UCL.95.male,rate.female, LCL.95 female, UCL.95 female, UCL.95 female, state, and county. The data was obtained by the National Cancer Institute and made public through The National Vital Statistics System. I am instesting in this dataset because I love doing research on cancer. The second dataset involves bad drivers. It contains 51 rows of observation involving 8 variables. The variables are state, num_drivers, perc_speeding,perc_alcohol,perc_not_distracted, perc_no_pervious,insurance_premiums, and losses. The data came from the story “Dear Mona, which state has the worst drivers?”. I’m interested in this dataset because I see bad drivers everyday.
+—</p>
+<pre class="r"><code>library(tidyverse)</code></pre>
+<pre><code>## ── Attaching packages ─────────────────────────── tidyverse 1.3.0 ──</code></pre>
+<pre><code>## ✔ ggplot2 3.2.1     ✔ purrr   0.3.3
+## ✔ tibble  2.1.3     ✔ dplyr   0.8.3
+## ✔ tidyr   1.0.0     ✔ stringr 1.4.0
+## ✔ readr   1.3.1     ✔ forcats 0.4.0</code></pre>
+<pre><code>## ── Conflicts ────────────────────────────── tidyverse_conflicts() ──
+## ✖ dplyr::filter()  masks stats::filter()
+## ✖ dplyr::lag()     masks stats::lag()
+## ✖ ggplot2::layer() masks latticeExtra::layer()</code></pre>
+<pre class="r"><code>library(tidyr)
+library(dplyr)
+library(devtools)</code></pre>
+<pre><code>## Loading required package: usethis</code></pre>
+<div id="tidying-rearranging-widelong" class="section level1">
+<h1>Tidying: Rearranging Wide/Long</h1>
+<pre class="r"><code>bad_drivers2&lt;-bad_drivers%&gt;%pivot_longer(cols = c(&quot;insurance_premiums&quot;,&quot;losses&quot;), 
+names_to = &quot;Policy Premiums/Insurance Losses&quot;,
+values_to=&quot;Cost(IP &amp; L)&quot;)
+glimpse(bad_drivers2)</code></pre>
+<pre><code>## Observations: 102
+## Variables: 8
+## $ state                              &lt;chr&gt; &quot;Alabama&quot;, &quot;Alabama&quot;, &quot;Alaska&quot;, &quot;A…
+## $ num_drivers                        &lt;dbl&gt; 18.8, 18.8, 18.1, 18.1, 18.6, 18.6…
+## $ perc_speeding                      &lt;int&gt; 39, 39, 41, 41, 35, 35, 18, 18, 35…
+## $ perc_alcohol                       &lt;int&gt; 30, 30, 25, 25, 28, 28, 26, 26, 28…
+## $ perc_not_distracted                &lt;int&gt; 96, 96, 90, 90, 84, 84, 94, 94, 91…
+## $ perc_no_previous                   &lt;int&gt; 80, 80, 94, 94, 96, 96, 95, 95, 89…
+## $ `Policy Premiums/Insurance Losses` &lt;chr&gt; &quot;insurance_premiums&quot;, &quot;losses&quot;, &quot;i…
+## $ `Cost(IP &amp; L)`                     &lt;dbl&gt; 784.55, 145.08, 1053.48, 133.93, 8…</code></pre>
+<div id="from-the-bad_drivers-dataset-i-decided-to-tidy-the-two-column-named-insurance_premiums-and-losses-into-one.-the-new-column-was-named-policy-premiumsinsurance-losses-while-the-values-of-the-two-separate-column-was-joined-under-a-new-column-named-costip-l.-i-did-using-pivot_longer-because-it-made-the-dataset-shorter-and-easier-to-read." class="section level2">
+<h2>From the bad_drivers dataset, I decided to tidy the two column named insurance_premiums, and losses into one. The new column was named Policy Premiums/Insurance Losses while the values of the two separate column was joined under a new column named Cost(IP &amp; L). I did using pivot_longer because it made the dataset shorter and easier to read.</h2>
+</div>
+</div>
+<div id="joiningmerging" class="section level1">
+<h1>Joining/Merging</h1>
+<pre class="r"><code>EDAdata2&lt;-full_join(bad_drivers2,USCancerRates,by=&quot;state&quot;)</code></pre>
+<pre><code>## Warning: Column `state` joining character vector and factor, coercing into
+## character vector</code></pre>
+<pre class="r"><code>glimpse(EDAdata2)</code></pre>
+<pre><code>## Observations: 6,086
+## Variables: 15
+## $ state                              &lt;chr&gt; &quot;Alabama&quot;, &quot;Alabama&quot;, &quot;Alabama&quot;, &quot;…
+## $ num_drivers                        &lt;dbl&gt; 18.8, 18.8, 18.8, 18.8, 18.8, 18.8…
+## $ perc_speeding                      &lt;int&gt; 39, 39, 39, 39, 39, 39, 39, 39, 39…
+## $ perc_alcohol                       &lt;int&gt; 30, 30, 30, 30, 30, 30, 30, 30, 30…
+## $ perc_not_distracted                &lt;int&gt; 96, 96, 96, 96, 96, 96, 96, 96, 96…
+## $ perc_no_previous                   &lt;int&gt; 80, 80, 80, 80, 80, 80, 80, 80, 80…
+## $ `Policy Premiums/Insurance Losses` &lt;chr&gt; &quot;insurance_premiums&quot;, &quot;insurance_p…
+## $ `Cost(IP &amp; L)`                     &lt;dbl&gt; 784.55, 784.55, 784.55, 784.55, 78…
+## $ rate.male                          &lt;dbl&gt; 363.7, 345.7, 340.7, 335.9, 330.1,…
+## $ LCL95.male                         &lt;dbl&gt; 311.1, 274.2, 304.5, 288.9, 293.4,…
+## $ UCL95.male                         &lt;dbl&gt; 423.2, 431.4, 380.9, 389.1, 370.6,…
+## $ rate.female                        &lt;dbl&gt; 151.0, 140.5, 182.3, 185.3, 172.0,…
+## $ LCL95.female                       &lt;dbl&gt; 123.6, 102.8, 161.3, 157.2, 151.4,…
+## $ UCL95.female                       &lt;dbl&gt; 183.6, 189.7, 205.5, 217.5, 195.0,…
+## $ county                             &lt;I&lt;chr&gt;&gt; Pickens County, Bullock County,…</code></pre>
+<div id="ive-decided-to-join-using-the-variable-state-because-that-was-the-variable-present-in-both-dataset.-using-the-variable-state-allowed-me-to-keep-the-rest-of-the-data-present-without-having-one-removed.-by-joining-the-variable-state-i-avoided-having-any-cases-drop." class="section level2">
+<h2>I’ve decided to join using the variable state because that was the variable present in both dataset. Using the variable “state”&quot; allowed me to keep the rest of the data present without having one removed. By joining the variable state, I avoided having any cases drop.</h2>
+</div>
+</div>
+<div id="wrangling" class="section level1">
+<h1>Wrangling</h1>
+<pre class="r"><code>EDAdata2%&gt;%filter(state==&quot;Texas&quot;)%&gt;%glimpse()</code></pre>
+<pre><code>## Observations: 470
+## Variables: 15
+## $ state                              &lt;chr&gt; &quot;Texas&quot;, &quot;Texas&quot;, &quot;Texas&quot;, &quot;Texas&quot;…
+## $ num_drivers                        &lt;dbl&gt; 19.4, 19.4, 19.4, 19.4, 19.4, 19.4…
+## $ perc_speeding                      &lt;int&gt; 40, 40, 40, 40, 40, 40, 40, 40, 40…
+## $ perc_alcohol                       &lt;int&gt; 38, 38, 38, 38, 38, 38, 38, 38, 38…
+## $ perc_not_distracted                &lt;int&gt; 91, 91, 91, 91, 91, 91, 91, 91, 91…
+## $ perc_no_previous                   &lt;int&gt; 87, 87, 87, 87, 87, 87, 87, 87, 87…
+## $ `Policy Premiums/Insurance Losses` &lt;chr&gt; &quot;insurance_premiums&quot;, &quot;insurance_p…
+## $ `Cost(IP &amp; L)`                     &lt;dbl&gt; 1004.75, 1004.75, 1004.75, 1004.75…
+## $ rate.male                          &lt;dbl&gt; 446.0, 402.3, 367.3, 353.6, 330.5,…
+## $ LCL95.male                         &lt;dbl&gt; 408.6, 288.8, 248.1, 320.7, 271.2,…
+## $ UCL95.male                         &lt;dbl&gt; 486.1, 555.5, 536.4, 389.7, 400.8,…
+## $ rate.female                        &lt;dbl&gt; 197.9, 137.6, 155.2, 209.0, 187.7,…
+## $ LCL95.female                       &lt;dbl&gt; 174.8, 87.0, 90.3, 187.8, 149.4, 1…
+## $ UCL95.female                       &lt;dbl&gt; 223.6, 223.5, 262.9, 232.1, 235.2,…
+## $ county                             &lt;I&lt;chr&gt;&gt; Anderson County, Hall County, C…</code></pre>
+<pre class="r"><code>EDAdata2%&gt;%slice(1:3)</code></pre>
+<pre><code>## # A tibble: 3 x 15
+##   state num_drivers perc_speeding perc_alcohol perc_not_distra… perc_no_previous
+##   &lt;chr&gt;       &lt;dbl&gt;         &lt;int&gt;        &lt;int&gt;            &lt;int&gt;            &lt;int&gt;
+## 1 Alab…        18.8            39           30               96               80
+## 2 Alab…        18.8            39           30               96               80
+## 3 Alab…        18.8            39           30               96               80
+## # … with 9 more variables: `Policy Premiums/Insurance Losses` &lt;chr&gt;, `Cost(IP &amp;
+## #   L)` &lt;dbl&gt;, rate.male &lt;dbl&gt;, LCL95.male &lt;dbl&gt;, UCL95.male &lt;dbl&gt;,
+## #   rate.female &lt;dbl&gt;, LCL95.female &lt;dbl&gt;, UCL95.female &lt;dbl&gt;, county &lt;I&lt;chr&gt;&gt;</code></pre>
+<pre class="r"><code>EDAdata2%&gt;%arrange(desc(state),desc(rate.male),desc(rate.female))%&gt;%head(10)</code></pre>
+<pre><code>## # A tibble: 10 x 15
+##    state num_drivers perc_speeding perc_alcohol perc_not_distra…
+##    &lt;chr&gt;       &lt;dbl&gt;         &lt;int&gt;        &lt;int&gt;            &lt;int&gt;
+##  1 Wyom…        17.4            42           32               81
+##  2 Wyom…        17.4            42           32               81
+##  3 Wyom…        17.4            42           32               81
+##  4 Wyom…        17.4            42           32               81
+##  5 Wyom…        17.4            42           32               81
+##  6 Wyom…        17.4            42           32               81
+##  7 Wyom…        17.4            42           32               81
+##  8 Wyom…        17.4            42           32               81
+##  9 Wyom…        17.4            42           32               81
+## 10 Wyom…        17.4            42           32               81
+## # … with 10 more variables: perc_no_previous &lt;int&gt;, `Policy Premiums/Insurance
+## #   Losses` &lt;chr&gt;, `Cost(IP &amp; L)` &lt;dbl&gt;, rate.male &lt;dbl&gt;, LCL95.male &lt;dbl&gt;,
+## #   UCL95.male &lt;dbl&gt;, rate.female &lt;dbl&gt;, LCL95.female &lt;dbl&gt;,
+## #   UCL95.female &lt;dbl&gt;, county &lt;I&lt;chr&gt;&gt;</code></pre>
+<pre class="r"><code>EDAdata2%&gt;%select(county, rate.male, rate.female, `Policy Premiums/Insurance Losses`)%&gt;%head(10)</code></pre>
+<pre><code>## # A tibble: 10 x 4
+##    county         rate.male rate.female `Policy Premiums/Insurance Losses`
+##    &lt;I&lt;chr&gt;&gt;           &lt;dbl&gt;       &lt;dbl&gt; &lt;chr&gt;                             
+##  1 Pickens County      364.        151  insurance_premiums                
+##  2 Bullock County      346.        140. insurance_premiums                
+##  3 Russell County      341.        182. insurance_premiums                
+##  4 Barbour County      336.        185. insurance_premiums                
+##  5 Dallas County       330.        172  insurance_premiums                
+##  6 Greene County       328.        124. insurance_premiums                
+##  7 Perry County        328.        174. insurance_premiums                
+##  8 Walker County       327.        158. insurance_premiums                
+##  9 Macon County        324.        184. insurance_premiums                
+## 10 Lamar County        321.        161. insurance_premiums</code></pre>
+<pre class="r"><code>EDAdata2%&gt;%mutate(TotalRateMF = rate.male+rate.female)%&gt;%head(5)</code></pre>
+<pre><code>## # A tibble: 5 x 16
+##   state num_drivers perc_speeding perc_alcohol perc_not_distra… perc_no_previous
+##   &lt;chr&gt;       &lt;dbl&gt;         &lt;int&gt;        &lt;int&gt;            &lt;int&gt;            &lt;int&gt;
+## 1 Alab…        18.8            39           30               96               80
+## 2 Alab…        18.8            39           30               96               80
+## 3 Alab…        18.8            39           30               96               80
+## 4 Alab…        18.8            39           30               96               80
+## 5 Alab…        18.8            39           30               96               80
+## # … with 10 more variables: `Policy Premiums/Insurance Losses` &lt;chr&gt;, `Cost(IP
+## #   &amp; L)` &lt;dbl&gt;, rate.male &lt;dbl&gt;, LCL95.male &lt;dbl&gt;, UCL95.male &lt;dbl&gt;,
+## #   rate.female &lt;dbl&gt;, LCL95.female &lt;dbl&gt;, UCL95.female &lt;dbl&gt;, county &lt;I&lt;chr&gt;&gt;,
+## #   TotalRateMF &lt;dbl&gt;</code></pre>
+<pre class="r"><code>EDAdata2%&gt;%mutate(rate.male = case_when(rate.male&gt;300 ~ &quot;high&quot;,rate.male&lt;250 &amp; rate.male&gt;150 ~ &quot;med&quot;,
+rate.male&lt;150 ~ &quot;low&quot;))%&gt;%head(20)</code></pre>
+<pre><code>## # A tibble: 20 x 15
+##    state num_drivers perc_speeding perc_alcohol perc_not_distra…
+##    &lt;chr&gt;       &lt;dbl&gt;         &lt;int&gt;        &lt;int&gt;            &lt;int&gt;
+##  1 Alab…        18.8            39           30               96
+##  2 Alab…        18.8            39           30               96
+##  3 Alab…        18.8            39           30               96
+##  4 Alab…        18.8            39           30               96
+##  5 Alab…        18.8            39           30               96
+##  6 Alab…        18.8            39           30               96
+##  7 Alab…        18.8            39           30               96
+##  8 Alab…        18.8            39           30               96
+##  9 Alab…        18.8            39           30               96
+## 10 Alab…        18.8            39           30               96
+## 11 Alab…        18.8            39           30               96
+## 12 Alab…        18.8            39           30               96
+## 13 Alab…        18.8            39           30               96
+## 14 Alab…        18.8            39           30               96
+## 15 Alab…        18.8            39           30               96
+## 16 Alab…        18.8            39           30               96
+## 17 Alab…        18.8            39           30               96
+## 18 Alab…        18.8            39           30               96
+## 19 Alab…        18.8            39           30               96
+## 20 Alab…        18.8            39           30               96
+## # … with 10 more variables: perc_no_previous &lt;int&gt;, `Policy Premiums/Insurance
+## #   Losses` &lt;chr&gt;, `Cost(IP &amp; L)` &lt;dbl&gt;, rate.male &lt;chr&gt;, LCL95.male &lt;dbl&gt;,
+## #   UCL95.male &lt;dbl&gt;, rate.female &lt;dbl&gt;, LCL95.female &lt;dbl&gt;,
+## #   UCL95.female &lt;dbl&gt;, county &lt;I&lt;chr&gt;&gt;</code></pre>
+<pre class="r"><code>EDAdata2%&gt;%group_by(county)%&gt;%summarize(mean_rate.female=mean(rate.female,na.rm=T),
+sd_rate.female=sd(rate.female, na.rm=T))%&gt;%head(10)</code></pre>
+<pre><code>## # A tibble: 10 x 3
+##    county           mean_rate.female sd_rate.female
+##    &lt;I&lt;chr&gt;&gt;                    &lt;dbl&gt;          &lt;dbl&gt;
+##  1 Abbeville County             162.            0  
+##  2 Acadia Parish                216.            0  
+##  3 Accomack County              198.            0  
+##  4 Ada County                   158.            0  
+##  5 Adair County                 167.           29.4
+##  6 Adams County                 163.           27.1
+##  7 Addison County               157.            0  
+##  8 Aiken County                 168.            0  
+##  9 Aitkin County                165.            0  
+## 10 Alachua County               166.            0</code></pre>
+<pre class="r"><code>EDAdata2%&gt;%mutate(rate.male1 = case_when(rate.male&gt;300 ~ &quot;high&quot;,
+rate.male&lt;250 &amp; rate.male&gt;150 ~ &quot;med&quot;,rate.male&lt;150 ~&quot;low&quot;))%&gt;%group_by(rate.male1)%&gt;%summarize()</code></pre>
+<pre><code>## # A tibble: 4 x 1
+##   rate.male1
+##   &lt;chr&gt;     
+## 1 high      
+## 2 low       
+## 3 med       
+## 4 &lt;NA&gt;</code></pre>
+<pre class="r"><code>EDAdata2%&gt;%group_by(state)%&gt;%summarize(mean_rate.female=mean(rate.female,na.rm=T),
+sd_rate.female=sd(rate.female, na.rm=T))%&gt;%head(10)</code></pre>
+<pre><code>## # A tibble: 10 x 3
+##    state                mean_rate.female sd_rate.female
+##    &lt;chr&gt;                           &lt;dbl&gt;          &lt;dbl&gt;
+##  1 Alabama                          162.          16.0 
+##  2 Alaska                           183.          37.2 
+##  3 Arizona                          144.          20.2 
+##  4 Arkansas                         170.          19.4 
+##  5 California                       161.          16.3 
+##  6 Colorado                         151.          23.1 
+##  7 Connecticut                      162            9.83
+##  8 Delaware                         178.           5.84
+##  9 District of Columbia             NaN           NA   
+## 10 Florida                          162.          18.9</code></pre>
+<pre class="r"><code>EDAdata2%&gt;%group_by(`Cost(IP &amp; L)`)%&gt;%summarize(median_rate.male=median(rate.male,na.rm = T),
+max_rate.male=max(rate.male,na.rm = T))%&gt;%head(10)</code></pre>
+<pre><code>## Warning in max(rate.male, na.rm = T): no non-missing arguments to max; returning
+## -Inf
+
+## Warning in max(rate.male, na.rm = T): no non-missing arguments to max; returning
+## -Inf
+
+## Warning in max(rate.male, na.rm = T): no non-missing arguments to max; returning
+## -Inf
+
+## Warning in max(rate.male, na.rm = T): no non-missing arguments to max; returning
+## -Inf</code></pre>
+<pre><code>## # A tibble: 10 x 3
+##    `Cost(IP &amp; L)` median_rate.male max_rate.male
+##             &lt;dbl&gt;            &lt;dbl&gt;         &lt;dbl&gt;
+##  1           82.8             212           274.
+##  2           85.2             236.          330.
+##  3           96.6             260.          309.
+##  4           96.9             235.          350.
+##  5          105.              236.          281.
+##  6          107.              236           451.
+##  7          109.              260.          356.
+##  8          109.              184.          306 
+##  9          110.              234.          271.
+## 10          110.              222.          320.</code></pre>
+<pre class="r"><code>EDAdata2%&gt;%summarize(sd_perc_alcohol= sd(perc_alcohol,na.rm = T))</code></pre>
+<pre><code>## # A tibble: 1 x 1
+##   sd_perc_alcohol
+##             &lt;dbl&gt;
+## 1            4.89</code></pre>
+<pre class="r"><code>EDAdata2%&gt;%summarize(sd_perc_speeding= sd(perc_speeding,na.rm = T))</code></pre>
+<pre><code>## # A tibble: 1 x 1
+##   sd_perc_speeding
+##              &lt;dbl&gt;
+## 1             9.57</code></pre>
+<pre class="r"><code>EDAdata2%&gt;%mutate(rate.male1 = case_when(rate.male&gt;300 ~ &quot;high&quot;,rate.male&lt;250 &amp; rate.male&gt;150 ~ &quot;med&quot;,rate.male&lt;150 ~ &quot;low&quot;))%&gt;%group_by(rate.male1,`Policy Premiums/Insurance Losses`)%&gt;%summarize(mean_rate.female=mean(rate.female,na.rm=T), sd_rate.female=sd(rate.female, na.rm=T))</code></pre>
+<pre><code>## # A tibble: 8 x 4
+## # Groups:   rate.male1 [4]
+##   rate.male1 `Policy Premiums/Insurance Losses` mean_rate.female sd_rate.female
+##   &lt;chr&gt;      &lt;chr&gt;                                         &lt;dbl&gt;          &lt;dbl&gt;
+## 1 high       insurance_premiums                             179.           26.1
+## 2 high       losses                                         179.           26.1
+## 3 low        insurance_premiums                             137.           31.3
+## 4 low        losses                                         137.           31.3
+## 5 med        insurance_premiums                             156.           21.2
+## 6 med        losses                                         156.           21.2
+## 7 &lt;NA&gt;       insurance_premiums                             170.           20.4
+## 8 &lt;NA&gt;       losses                                         170.           20.4</code></pre>
+<pre class="r"><code>EDAdata2%&gt;%group_by(`Policy Premiums/Insurance Losses`)%&gt;%summarize(sd_perc_alcohol= sd(perc_alcohol,na.rm = T))</code></pre>
+<pre><code>## # A tibble: 2 x 2
+##   `Policy Premiums/Insurance Losses` sd_perc_alcohol
+##   &lt;chr&gt;                                        &lt;dbl&gt;
+## 1 insurance_premiums                            4.89
+## 2 losses                                        4.89</code></pre>
+<pre class="r"><code>EDAdata2%&gt;%summarize(median_num_drivers=median(num_drivers,na.rm = T))</code></pre>
+<pre><code>## # A tibble: 1 x 1
+##   median_num_drivers
+##                &lt;dbl&gt;
+## 1               16.1</code></pre>
+<pre class="r"><code>EDAdata2%&gt;%group_by(state)%&gt;%summarize(mean_UCL95.female=mean(UCL95.female,na.rm = T))</code></pre>
+<pre><code>## # A tibble: 51 x 2
+##    state                mean_UCL95.female
+##    &lt;chr&gt;                            &lt;dbl&gt;
+##  1 Alabama                           190.
+##  2 Alaska                            269.
+##  3 Arizona                           164.
+##  4 Arkansas                          206.
+##  5 California                        180.
+##  6 Colorado                          199.
+##  7 Connecticut                       172.
+##  8 Delaware                          188.
+##  9 District of Columbia              NaN 
+## 10 Florida                           186.
+## # … with 41 more rows</code></pre>
+<div id="the-first-code-was-filter.-the-dataset-was-filter-by-state-more-precisely-texas.-it-resulted-in-a-summary-statistics-for-all-of-the-observations-from-the-state-of-texas.-the-second-line-of-code-used-slice-and-it-resulted-in-observations-1-3-of-the-dataset-edadata2.-arrange-was-used-next-and-it-gave-a-summary-statistics-where-state-rate.maleand-rate.female-was-arranged-in-descending-value.-next-the-function-select-was-used-and-the-variable-county-rate.male-rate.female-and-policy-premiumsinsurance-losses-were-selected-for.-mutate-was-used-next-to-form-a-new-column-named-totalratemf-which-was-the-sum-of-rate.male-and-rate.female.the-rest-of-the-codes-were-a-combination-of-the-function-summarize-and-group-by.-the-group-by-function-set-the-dataset-corresponding-to-the-desired-variable-while-the-summarize-function-gave-a-summary-of-what-data-was-desired.-for-example-the-mean-median-standard-deviation-and-much-more." class="section level2">
+<h2>The first code was filter. The dataset was filter by state; more precisely Texas. It resulted in a summary statistics for all of the observations from the state of Texas. The second line of code used slice and it resulted in observations 1-3 of the dataset “EDAdata2”. Arrange was used next and it gave a summary statistics where state, rate.male,and rate.female was arranged in descending value. Next, the function select was used and the variable county, rate.male, rate.female, and “Policy Premiums/Insurance Losses” were selected for. Mutate was used next to form a new column named TotalRateMF, which was the sum of rate.male and rate.female.The rest of the codes were a combination of the function summarize and group by. The group by function set the dataset corresponding to the desired variable, while the summarize function gave a summary of what data was desired. For example, the mean, median, standard deviation, and much more.</h2>
+</div>
+</div>
+<div id="dimensionality-reduction" class="section level1">
+<h1>Dimensionality Reduction</h1>
+<pre class="r"><code>EDAdata2%&gt;%select_if(is.numeric)%&gt;%cov</code></pre>
+<pre><code>##                     num_drivers perc_speeding perc_alcohol perc_not_distracted
+## num_drivers           12.805546      1.816437     3.728300            1.720599
+## perc_speeding          1.816437     91.622079    20.921901           25.437539
+## perc_alcohol           3.728300     20.921901    23.888942            4.431325
+## perc_not_distracted    1.720599     25.437539     4.431325          271.304172
+## perc_no_previous      -2.072312     -4.765304    -1.919615          -23.554693
+## Cost(IP &amp; L)          31.385468     84.801189    12.768092          -50.824065
+## rate.male                    NA            NA           NA                  NA
+## LCL95.male                   NA            NA           NA                  NA
+## UCL95.male                   NA            NA           NA                  NA
+## rate.female                  NA            NA           NA                  NA
+## LCL95.female                 NA            NA           NA                  NA
+## UCL95.female                 NA            NA           NA                  NA
+##                     perc_no_previous Cost(IP &amp; L) rate.male LCL95.male
+## num_drivers                -2.072312     31.38547        NA         NA
+## perc_speeding              -4.765304     84.80119        NA         NA
+## perc_alcohol               -1.919615     12.76809        NA         NA
+## perc_not_distracted       -23.554693    -50.82407        NA         NA
+## perc_no_previous           39.991384     33.42144        NA         NA
+## Cost(IP &amp; L)               33.421445 141454.21562        NA         NA
+## rate.male                         NA           NA        NA         NA
+## LCL95.male                        NA           NA        NA         NA
+## UCL95.male                        NA           NA        NA         NA
+## rate.female                       NA           NA        NA         NA
+## LCL95.female                      NA           NA        NA         NA
+## UCL95.female                      NA           NA        NA         NA
+##                     UCL95.male rate.female LCL95.female UCL95.female
+## num_drivers                 NA          NA           NA           NA
+## perc_speeding               NA          NA           NA           NA
+## perc_alcohol                NA          NA           NA           NA
+## perc_not_distracted         NA          NA           NA           NA
+## perc_no_previous            NA          NA           NA           NA
+## Cost(IP &amp; L)                NA          NA           NA           NA
+## rate.male                   NA          NA           NA           NA
+## LCL95.male                  NA          NA           NA           NA
+## UCL95.male                  NA          NA           NA           NA
+## rate.female                 NA          NA           NA           NA
+## LCL95.female                NA          NA           NA           NA
+## UCL95.female                NA          NA           NA           NA</code></pre>
+<pre class="r"><code>EDAdata2%&gt;%select_if(is.numeric)%&gt;%cov%&gt;%round(2)</code></pre>
+<pre><code>##                     num_drivers perc_speeding perc_alcohol perc_not_distracted
+## num_drivers               12.81          1.82         3.73                1.72
+## perc_speeding              1.82         91.62        20.92               25.44
+## perc_alcohol               3.73         20.92        23.89                4.43
+## perc_not_distracted        1.72         25.44         4.43              271.30
+## perc_no_previous          -2.07         -4.77        -1.92              -23.55
+## Cost(IP &amp; L)              31.39         84.80        12.77              -50.82
+## rate.male                    NA            NA           NA                  NA
+## LCL95.male                   NA            NA           NA                  NA
+## UCL95.male                   NA            NA           NA                  NA
+## rate.female                  NA            NA           NA                  NA
+## LCL95.female                 NA            NA           NA                  NA
+## UCL95.female                 NA            NA           NA                  NA
+##                     perc_no_previous Cost(IP &amp; L) rate.male LCL95.male
+## num_drivers                    -2.07        31.39        NA         NA
+## perc_speeding                  -4.77        84.80        NA         NA
+## perc_alcohol                   -1.92        12.77        NA         NA
+## perc_not_distracted           -23.55       -50.82        NA         NA
+## perc_no_previous               39.99        33.42        NA         NA
+## Cost(IP &amp; L)                   33.42    141454.22        NA         NA
+## rate.male                         NA           NA        NA         NA
+## LCL95.male                        NA           NA        NA         NA
+## UCL95.male                        NA           NA        NA         NA
+## rate.female                       NA           NA        NA         NA
+## LCL95.female                      NA           NA        NA         NA
+## UCL95.female                      NA           NA        NA         NA
+##                     UCL95.male rate.female LCL95.female UCL95.female
+## num_drivers                 NA          NA           NA           NA
+## perc_speeding               NA          NA           NA           NA
+## perc_alcohol                NA          NA           NA           NA
+## perc_not_distracted         NA          NA           NA           NA
+## perc_no_previous            NA          NA           NA           NA
+## Cost(IP &amp; L)                NA          NA           NA           NA
+## rate.male                   NA          NA           NA           NA
+## LCL95.male                  NA          NA           NA           NA
+## UCL95.male                  NA          NA           NA           NA
+## rate.female                 NA          NA           NA           NA
+## LCL95.female                NA          NA           NA           NA
+## UCL95.female                NA          NA           NA           NA</code></pre>
+<pre class="r"><code>EDAdata2%&gt;%select_if(is.numeric)%&gt;%scale%&gt;%cov%&gt;%round(2)</code></pre>
+<pre><code>##                     num_drivers perc_speeding perc_alcohol perc_not_distracted
+## num_drivers                1.00          0.05         0.21                0.03
+## perc_speeding              0.05          1.00         0.45                0.16
+## perc_alcohol               0.21          0.45         1.00                0.06
+## perc_not_distracted        0.03          0.16         0.06                1.00
+## perc_no_previous          -0.09         -0.08        -0.06               -0.23
+## Cost(IP &amp; L)               0.02          0.02         0.01               -0.01
+## rate.male                    NA            NA           NA                  NA
+## LCL95.male                   NA            NA           NA                  NA
+## UCL95.male                   NA            NA           NA                  NA
+## rate.female                  NA            NA           NA                  NA
+## LCL95.female                 NA            NA           NA                  NA
+## UCL95.female                 NA            NA           NA                  NA
+##                     perc_no_previous Cost(IP &amp; L) rate.male LCL95.male
+## num_drivers                    -0.09         0.02        NA         NA
+## perc_speeding                  -0.08         0.02        NA         NA
+## perc_alcohol                   -0.06         0.01        NA         NA
+## perc_not_distracted            -0.23        -0.01        NA         NA
+## perc_no_previous                1.00         0.01        NA         NA
+## Cost(IP &amp; L)                    0.01         1.00        NA         NA
+## rate.male                         NA           NA        NA         NA
+## LCL95.male                        NA           NA        NA         NA
+## UCL95.male                        NA           NA        NA         NA
+## rate.female                       NA           NA        NA         NA
+## LCL95.female                      NA           NA        NA         NA
+## UCL95.female                      NA           NA        NA         NA
+##                     UCL95.male rate.female LCL95.female UCL95.female
+## num_drivers                 NA          NA           NA           NA
+## perc_speeding               NA          NA           NA           NA
+## perc_alcohol                NA          NA           NA           NA
+## perc_not_distracted         NA          NA           NA           NA
+## perc_no_previous            NA          NA           NA           NA
+## Cost(IP &amp; L)                NA          NA           NA           NA
+## rate.male                   NA          NA           NA           NA
+## LCL95.male                  NA          NA           NA           NA
+## UCL95.male                  NA          NA           NA           NA
+## rate.female                 NA          NA           NA           NA
+## LCL95.female                NA          NA           NA           NA
+## UCL95.female                NA          NA           NA           NA</code></pre>
+<pre class="r"><code>ggplot(EDAdata2,aes(x=rate.male,y=rate.female))+geom_point()+coord_fixed()</code></pre>
+<pre><code>## Warning: Removed 150 rows containing missing values (geom_point).</code></pre>
+<p><img src="/Project1_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<pre class="r"><code>EDAdata3&lt;-EDAdata2%&gt;%select(-county,-`Policy Premiums/Insurance Losses`,-state)%&gt;%na.omit
+EDAdata_nums&lt;-EDAdata3%&gt;%select_if(is.numeric)%&gt;%scale()
+EDAdata_pca&lt;-princomp(EDAdata_nums)
+summary(EDAdata_pca,loadings=T)</code></pre>
+<pre><code>## Importance of components:
+##                           Comp.1    Comp.2    Comp.3    Comp.4     Comp.5
+## Standard deviation     1.8481281 1.2807524 1.2161804 1.1448144 1.06184455
+## Proportion of Variance 0.2846794 0.1367169 0.1232787 0.1092351 0.09397532
+## Cumulative Proportion  0.2846794 0.4213963 0.5446750 0.6539101 0.74788539
+##                            Comp.6     Comp.7     Comp.8     Comp.9     Comp.10
+## Standard deviation     0.99461698 0.89644753 0.83934815 0.70736469 0.143095772
+## Proportion of Variance 0.08245247 0.06697946 0.05871867 0.04170409 0.001706654
+## Cumulative Proportion  0.83033786 0.89731732 0.95603599 0.99774009 0.999446740
+##                             Comp.11      Comp.12
+## Standard deviation     0.0768732854 2.699074e-02
+## Proportion of Variance 0.0004925415 6.071856e-05
+## Cumulative Proportion  0.9999392814 1.000000e+00
+## 
+## Loadings:
+##                     Comp.1 Comp.2 Comp.3 Comp.4 Comp.5 Comp.6 Comp.7 Comp.8
+## num_drivers          0.141  0.194  0.470  0.135                0.527  0.617
+## perc_speeding               0.584         0.152 -0.251        -0.274 -0.158
+## perc_alcohol                0.539  0.250  0.131 -0.349 -0.126        -0.148
+## perc_not_distracted         0.340                0.590  0.142 -0.565  0.395
+## perc_no_previous           -0.323               -0.614        -0.472  0.525
+## Cost(IP &amp; L)                                    -0.213  0.966              
+## rate.male            0.480 -0.104  0.119  0.329               -0.160       
+## LCL95.male           0.426        -0.190  0.484                            
+## UCL95.male           0.411 -0.145  0.447                      -0.224 -0.232
+## rate.female          0.427  0.173 -0.240 -0.405 -0.118                     
+## LCL95.female         0.340  0.202 -0.561        -0.128         0.132  0.211
+## UCL95.female         0.297         0.285 -0.644                      -0.129
+##                     Comp.9 Comp.10 Comp.11 Comp.12
+## num_drivers          0.186                        
+## perc_speeding        0.675                        
+## perc_alcohol        -0.684                        
+## perc_not_distracted -0.182                        
+## perc_no_previous                                  
+## Cost(IP &amp; L)                                      
+## rate.male                   0.165  -0.334  -0.677 
+## LCL95.male                 -0.584           0.429 
+## UCL95.male                  0.371   0.488   0.347 
+## rate.female                 0.382  -0.521   0.352 
+## LCL95.female                        0.606  -0.265 
+## UCL95.female               -0.583          -0.206</code></pre>
+<pre class="r"><code>eigen(cor(EDAdata_nums))</code></pre>
+<pre><code>## eigen() decomposition
+## $values
+##  [1] 3.4161530069 1.6406029680 1.4793439548 1.3108209460 1.1277038163
+##  [6] 0.9894296293 0.8037535729 0.7046240262 0.5004491091 0.0204798500
+## [11] 0.0059104977 0.0007286227
+## 
+## $vectors
+##              [,1]        [,2]        [,3]        [,4]        [,5]         [,6]
+##  [1,]  0.14091041  0.19425138 -0.47034079 -0.13544791 -0.05731790  0.081948189
+##  [2,] -0.07997573  0.58446658 -0.03319861 -0.15168208  0.25102412 -0.095004713
+##  [3,] -0.04067565  0.53923560 -0.24953582 -0.13111989  0.34854006 -0.125824732
+##  [4,] -0.04863287  0.34005988  0.01779695  0.06405884 -0.59022039  0.141821856
+##  [5,] -0.04845119 -0.32289281 -0.09842857  0.04173177  0.61361578 -0.077282590
+##  [6,]  0.02589183  0.03711376  0.04662327 -0.09941192  0.21268780  0.965515655
+##  [7,]  0.47969298 -0.10370974 -0.11851457 -0.32892341 -0.05559351 -0.037953152
+##  [8,]  0.42644402 -0.03063536  0.18950573 -0.48352053 -0.01544030 -0.065675520
+##  [9,]  0.41131299 -0.14503615 -0.44686134 -0.02700905 -0.08375464  0.007511587
+## [10,]  0.42668205  0.17341180  0.24009777  0.40547094  0.11757731 -0.005241802
+## [11,]  0.33971888  0.20182619  0.56074226  0.05939119  0.12764300 -0.044296261
+## [12,]  0.29682632  0.07125360 -0.28549715  0.64426701  0.04049435  0.048170984
+##              [,7]        [,8]         [,9]        [,10]        [,11]
+##  [1,]  0.52656823 -0.61731246 -0.185550273 -0.002714540 -0.007584924
+##  [2,] -0.27370815  0.15779315 -0.675238509  0.008793938 -0.002523097
+##  [3,]  0.02705672  0.14782841  0.683786116 -0.024845008  0.004947947
+##  [4,] -0.56541400 -0.39516606  0.182224398 -0.005797346  0.003367688
+##  [5,] -0.47182596 -0.52530528  0.029289517  0.004887338 -0.004157863
+##  [6,] -0.02283111  0.08627621  0.021737092  0.000409583  0.001235416
+##  [7,] -0.15976117  0.09746700  0.004869472 -0.165236503  0.333605738
+##  [8,] -0.06852066 -0.03478363  0.050816617  0.584148601  0.095094373
+##  [9,] -0.22363642  0.23216720 -0.038020817 -0.371444496 -0.488191233
+## [10,]  0.05878703 -0.08253483 -0.010441128 -0.382428556  0.521266995
+## [11,]  0.13177851 -0.21117249  0.046843109 -0.079450970 -0.605627602
+## [12,] -0.05648222  0.12888304 -0.034199044  0.583243174 -0.052067123
+##               [,12]
+##  [1,] -0.0007978718
+##  [2,]  0.0029193250
+##  [3,] -0.0027115628
+##  [4,] -0.0006468747
+##  [5,]  0.0012820537
+##  [6,]  0.0003204847
+##  [7,]  0.6772949819
+##  [8,] -0.4291747179
+##  [9,] -0.3473301036
+## [10,] -0.3515927352
+## [11,]  0.2653153952
+## [12,]  0.2059465495</code></pre>
+<pre class="r"><code>ggplot()+geom_point(aes(EDAdata_pca$scores[,1],EDAdata_pca$scores[,2]))+xlab(&quot;PC1&quot;)+ylab(&quot;PC2&quot;)</code></pre>
+<p><img src="/Project1_files/figure-html/unnamed-chunk-5-2.png" width="672" /></p>
+<pre class="r"><code>EDAdata_pca$loadings[1:7,1:2]%&gt;%as.data.frame%&gt;%rownames_to_column%&gt;%
+ggplot()+geom_hline(aes(yintercept=0),lty=2)+
+geom_vline(aes(xintercept=0),lty=2)+ylab(&quot;PC2&quot;)+xlab(&quot;PC1&quot;)+
+geom_segment(aes(x=0,y=0,xend=Comp.1,yend=Comp.2),arrow=arrow(),col=&quot;red&quot;)+
+geom_label(aes(x=Comp.1*1.1,y=Comp.2*1.1,label=rowname))</code></pre>
+<p><img src="/Project1_files/figure-html/unnamed-chunk-5-3.png" width="672" />
+# Based on the Plot of loadings, it can be said that since perc_no_pervious, perc_not_distracted, perc_alcohol and perc_speeding are closer to -1 and 1 respectively, they are variables that strongly influences the component. However, since num_drivers, Cost(IP&amp;L), and rate.male are closer to 0, they have a weak influence on the component. Since num_drivers, Cost(IP&amp;L), and rate.male are going the in opposite direction compared to the rest of the variables, it can be said that they have little to no correlation with the other variables. On the other hand, perc_alcohol, perc_speeding, and perc_not_distracted are highly correlated because the angle they form with one another are small. While they don’t have a high correlation with num_drivers, cost(IP&amp;L), and rate.male because they angle they form with those variables are extremely big.</p>
+</div>
+
+        </div>
+    </div>
+</div>
+            </main>
+            <footer class="footer">
+    <div class="copyright">
+        <div class="copyright-line">
+            Powered by <a href="https://gohugo.io/" target="_blank" rel="external nofollow noopener noreffer">Hugo</a>&nbsp;|&nbsp;Theme - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="external nofollow noopener noreffer">LoveIt<i class="far fa-heart fa-fw"></i></a>
+        </div>
+        <div class="copyright-line">
+            <i class="far fa-copyright fa-fw"></i><span itemprop="copyrightYear">2018 - 2019</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/">Tu Hoang</a></span><span class="license">&nbsp;|&nbsp;<a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div>
+    </div>
+</footer>
+
+
+    
+    
+
+
+
+
+    
+    
+
+
+
+
+    
+    
+
+
+
+
+
+    
+    
+
+
+
+    
+    
+
+
+
+    
+    
+
+
+
+
+
+    
+    
+
+
+
+
+
+    
+    
+
+
+
+    
+    
+
+
+
+
+
+    
+    
+
+
+
+
+    
+    
+
+
+
+
+    
+    
+
+
+
+    
+    
+
+
+
+
+
+    
+    
+
+
+<script src="/js/lib/jquery/jquery.slim.min.min.js"></script>
+<script src="/js/lib/lazysizes/lazysizes.min.min.js"></script>
+<script src="/js/lib/smooth-scroll/smooth-scroll.polyfills.min.min.js"></script><script>window.scroll = new SmoothScroll('[data-scroll]', {speed: 300, speedAsDuration: true});</script>
+
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+
+
+
+
+
+
+<script src="/js/blog.min.js"></script>
+
+
+    
+</div>
+        <a href="#" class="dynamic-to-top" id="dynamic-to-top" data-scroll><span>&nbsp;</span></a>
+    </body>
+</html>

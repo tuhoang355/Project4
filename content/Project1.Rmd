@@ -1,0 +1,89 @@
+---
+output:
+  html_document: default
+  pdf_document: default
+---
+#Title: SDS 348 Project: 1 Exploratory Data Analysis
+#Author: Tu Hoang (tah2957)
+#Date: 10/20/2019
+---
+```{r global_options, include=FALSE}
+library(latticeExtra)
+library(fivethirtyeight)
+library(knitr)
+```
+Introduction
+The two dataset that I have decided to use for this Explorartory Data Anaylsis is a dataset named bad_drivers and another data set named USCancerRates. At first glance, these two dataset don't have anything in common since one dealt with Cancer rates and the other dealt with factors contributing to inattentive drivers. I've decided to use this two dataset because I wanted to see if there was a plausible correction between inattentive drivers and cancer rates. Although, I know that there will not be a potential association data wise, these two dataset does show two of the top causes of death in america. 
+The USCancerRates dataset contain 3041 observations of 8 variables. Those variables are rate.male, LCL95.male, UCL.95.male,rate.female, LCL.95 female, UCL.95 female, UCL.95 female, state, and county. The data was obtained by the National Cancer Institute and made public through The National Vital Statistics System. I am instesting in this dataset because I love doing research on cancer. The second dataset involves bad drivers. It contains 51 rows of observation involving 8 variables. The variables are state, num_drivers, perc_speeding,perc_alcohol,perc_not_distracted, perc_no_pervious,insurance_premiums, and losses. The data came from the story "Dear Mona, which state has the worst drivers?". I'm interested in this dataset because I see bad drivers everyday.
+---
+```{R}
+library(tidyverse)
+library(tidyr)
+library(dplyr)
+library(devtools)
+```
+# Tidying: Rearranging Wide/Long
+
+```{R}
+bad_drivers2<-bad_drivers%>%pivot_longer(cols = c("insurance_premiums","losses"), 
+names_to = "Policy Premiums/Insurance Losses",
+values_to="Cost(IP & L)")
+glimpse(bad_drivers2)
+```
+From the bad_drivers dataset, I decided to tidy the two column named insurance_premiums, and losses into one. The new column was named Policy Premiums/Insurance Losses while the values of the two separate column was joined under a new column named Cost(IP & L). I did using pivot_longer because it made the dataset shorter and easier to read. 
+---
+# Joining/Merging
+
+```{R}
+EDAdata2<-full_join(bad_drivers2,USCancerRates,by="state")
+glimpse(EDAdata2)
+```
+I've decided to join using the variable state because that was the variable present in both dataset. Using the variable "state"" allowed me to keep the rest of the data present without having one removed. By joining the variable state, I avoided having any cases drop. 
+---
+# Wrangling
+
+```{R}
+EDAdata2%>%filter(state=="Texas")%>%glimpse()
+EDAdata2%>%slice(1:3)
+EDAdata2%>%arrange(desc(state),desc(rate.male),desc(rate.female))%>%head(10)
+EDAdata2%>%select(county, rate.male, rate.female, `Policy Premiums/Insurance Losses`)%>%head(10)
+EDAdata2%>%mutate(TotalRateMF = rate.male+rate.female)%>%head(5)
+EDAdata2%>%mutate(rate.male = case_when(rate.male>300 ~ "high",rate.male<250 & rate.male>150 ~ "med",
+rate.male<150 ~ "low"))%>%head(20)
+EDAdata2%>%group_by(county)%>%summarize(mean_rate.female=mean(rate.female,na.rm=T),
+sd_rate.female=sd(rate.female, na.rm=T))%>%head(10)
+EDAdata2%>%mutate(rate.male1 = case_when(rate.male>300 ~ "high",
+rate.male<250 & rate.male>150 ~ "med",rate.male<150 ~"low"))%>%group_by(rate.male1)%>%summarize()
+EDAdata2%>%group_by(state)%>%summarize(mean_rate.female=mean(rate.female,na.rm=T),
+sd_rate.female=sd(rate.female, na.rm=T))%>%head(10)
+EDAdata2%>%group_by(`Cost(IP & L)`)%>%summarize(median_rate.male=median(rate.male,na.rm = T),
+max_rate.male=max(rate.male,na.rm = T))%>%head(10)
+EDAdata2%>%summarize(sd_perc_alcohol= sd(perc_alcohol,na.rm = T))
+EDAdata2%>%summarize(sd_perc_speeding= sd(perc_speeding,na.rm = T))
+EDAdata2%>%mutate(rate.male1 = case_when(rate.male>300 ~ "high",rate.male<250 & rate.male>150 ~ "med",rate.male<150 ~ "low"))%>%group_by(rate.male1,`Policy Premiums/Insurance Losses`)%>%summarize(mean_rate.female=mean(rate.female,na.rm=T), sd_rate.female=sd(rate.female, na.rm=T))
+EDAdata2%>%group_by(`Policy Premiums/Insurance Losses`)%>%summarize(sd_perc_alcohol= sd(perc_alcohol,na.rm = T))
+EDAdata2%>%summarize(median_num_drivers=median(num_drivers,na.rm = T))
+EDAdata2%>%group_by(state)%>%summarize(mean_UCL95.female=mean(UCL95.female,na.rm = T))
+```
+The first code was filter. The dataset was filter by state; more precisely Texas. It resulted in a summary statistics for all of the observations from the state of Texas. The second line of code used slice and it resulted in observations 1-3 of the dataset "EDAdata2". Arrange was used next and it gave a summary statistics where state, rate.male,and rate.female was arranged in descending value. Next, the function select was used and the variable county, rate.male, rate.female, and "Policy Premiums/Insurance Losses" were selected for. Mutate was used next to form a new column named TotalRateMF, which was the sum of rate.male and rate.female.The rest of the codes were a combination of the function summarize and group by. The group by function set the dataset corresponding to the desired variable, while the summarize function gave a summary of what data was desired. For example, the mean, median, standard deviation, and much more.
+---
+# Dimensionality Reduction
+
+```{R}
+EDAdata2%>%select_if(is.numeric)%>%cov
+EDAdata2%>%select_if(is.numeric)%>%cov%>%round(2)
+EDAdata2%>%select_if(is.numeric)%>%scale%>%cov%>%round(2)
+ggplot(EDAdata2,aes(x=rate.male,y=rate.female))+geom_point()+coord_fixed()
+EDAdata3<-EDAdata2%>%select(-county,-`Policy Premiums/Insurance Losses`,-state)%>%na.omit
+EDAdata_nums<-EDAdata3%>%select_if(is.numeric)%>%scale()
+EDAdata_pca<-princomp(EDAdata_nums)
+summary(EDAdata_pca,loadings=T)
+eigen(cor(EDAdata_nums))
+ggplot()+geom_point(aes(EDAdata_pca$scores[,1],EDAdata_pca$scores[,2]))+xlab("PC1")+ylab("PC2")
+EDAdata_pca$loadings[1:7,1:2]%>%as.data.frame%>%rownames_to_column%>%
+ggplot()+geom_hline(aes(yintercept=0),lty=2)+
+geom_vline(aes(xintercept=0),lty=2)+ylab("PC2")+xlab("PC1")+
+geom_segment(aes(x=0,y=0,xend=Comp.1,yend=Comp.2),arrow=arrow(),col="red")+
+geom_label(aes(x=Comp.1*1.1,y=Comp.2*1.1,label=rowname))
+```
+# Based on the Plot of loadings, it can be said that since perc_no_pervious, perc_not_distracted, perc_alcohol and perc_speeding are closer to -1 and 1 respectively, they are variables that strongly influences the component. However, since num_drivers, Cost(IP&L), and rate.male are closer to 0, they have a weak influence on the component. Since num_drivers, Cost(IP&L), and rate.male are going the in opposite direction compared to the rest of the variables, it can be said that they have little to no correlation with the other variables. On the other hand, perc_alcohol, perc_speeding, and perc_not_distracted are highly correlated because the angle they form with one another are small. While they don't have a high correlation with num_drivers, cost(IP&L), and rate.male because they angle they form with those variables are extremely big. 

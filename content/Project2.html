@@ -1,0 +1,792 @@
+---
+output:
+  html_document: default
+  pdf_document: default
+---
+
+
+
+<p>#Title: SDS 348 Project: 2 Modeling, Testing, and Predicting
+#Author: Tu Hoang (tah2957)
+#Date: 11/27/2019
+—</p>
+<pre class="r"><code>bad_drivers2&lt;-bad_drivers%&gt;%pivot_longer(cols = c(&quot;insurance_premiums&quot;,&quot;losses&quot;), 
+names_to = &quot;PPIL&quot;,
+values_to=&quot;Cost(IP &amp; L)&quot;)
+glimpse(bad_drivers2)</code></pre>
+<pre><code>## Observations: 102
+## Variables: 8
+## $ state               &lt;chr&gt; &quot;Alabama&quot;, &quot;Alabama&quot;, &quot;Alaska&quot;, &quot;Alaska&quot;, &quot;Arizon…
+## $ num_drivers         &lt;dbl&gt; 18.8, 18.8, 18.1, 18.1, 18.6, 18.6, 22.4, 22.4, 1…
+## $ perc_speeding       &lt;int&gt; 39, 39, 41, 41, 35, 35, 18, 18, 35, 35, 37, 37, 4…
+## $ perc_alcohol        &lt;int&gt; 30, 30, 25, 25, 28, 28, 26, 26, 28, 28, 28, 28, 3…
+## $ perc_not_distracted &lt;int&gt; 96, 96, 90, 90, 84, 84, 94, 94, 91, 91, 79, 79, 8…
+## $ perc_no_previous    &lt;int&gt; 80, 80, 94, 94, 96, 96, 95, 95, 89, 89, 95, 95, 8…
+## $ PPIL                &lt;chr&gt; &quot;insurance_premiums&quot;, &quot;losses&quot;, &quot;insurance_premiu…
+## $ `Cost(IP &amp; L)`      &lt;dbl&gt; 784.55, 145.08, 1053.48, 133.93, 899.47, 110.35, …</code></pre>
+<pre class="r"><code>MTP2&lt;-full_join(bad_drivers2,USCancerRates,by=&quot;state&quot;)%&gt;%glimpse()</code></pre>
+<pre><code>## Warning: Column `state` joining character vector and factor, coercing into
+## character vector</code></pre>
+<pre><code>## Observations: 6,086
+## Variables: 15
+## $ state               &lt;chr&gt; &quot;Alabama&quot;, &quot;Alabama&quot;, &quot;Alabama&quot;, &quot;Alabama&quot;, &quot;Alab…
+## $ num_drivers         &lt;dbl&gt; 18.8, 18.8, 18.8, 18.8, 18.8, 18.8, 18.8, 18.8, 1…
+## $ perc_speeding       &lt;int&gt; 39, 39, 39, 39, 39, 39, 39, 39, 39, 39, 39, 39, 3…
+## $ perc_alcohol        &lt;int&gt; 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 3…
+## $ perc_not_distracted &lt;int&gt; 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 9…
+## $ perc_no_previous    &lt;int&gt; 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 8…
+## $ PPIL                &lt;chr&gt; &quot;insurance_premiums&quot;, &quot;insurance_premiums&quot;, &quot;insu…
+## $ `Cost(IP &amp; L)`      &lt;dbl&gt; 784.55, 784.55, 784.55, 784.55, 784.55, 784.55, 7…
+## $ rate.male           &lt;dbl&gt; 363.7, 345.7, 340.7, 335.9, 330.1, 328.1, 327.9, …
+## $ LCL95.male          &lt;dbl&gt; 311.1, 274.2, 304.5, 288.9, 293.4, 255.9, 261.4, …
+## $ UCL95.male          &lt;dbl&gt; 423.2, 431.4, 380.9, 389.1, 370.6, 416.6, 408.0, …
+## $ rate.female         &lt;dbl&gt; 151.0, 140.5, 182.3, 185.3, 172.0, 124.1, 174.2, …
+## $ LCL95.female        &lt;dbl&gt; 123.6, 102.8, 161.3, 157.2, 151.4, 88.5, 133.3, 1…
+## $ UCL95.female        &lt;dbl&gt; 183.6, 189.7, 205.5, 217.5, 195.0, 171.7, 225.4, …
+## $ county              &lt;I&lt;chr&gt;&gt; Pickens County, Bullock County, Russell County…</code></pre>
+<pre class="r"><code>MTP3&lt;-MTP2%&gt;%mutate(`PPIL`, &quot;PIL&quot; = with(MTP2,ifelse(`PPIL` == &quot;insurance_premiums&quot;, yes = 1, no = 0)))%&gt;%na.omit()%&gt;%glimpse()</code></pre>
+<pre><code>## Observations: 5,936
+## Variables: 16
+## $ state               &lt;chr&gt; &quot;Alabama&quot;, &quot;Alabama&quot;, &quot;Alabama&quot;, &quot;Alabama&quot;, &quot;Alab…
+## $ num_drivers         &lt;dbl&gt; 18.8, 18.8, 18.8, 18.8, 18.8, 18.8, 18.8, 18.8, 1…
+## $ perc_speeding       &lt;int&gt; 39, 39, 39, 39, 39, 39, 39, 39, 39, 39, 39, 39, 3…
+## $ perc_alcohol        &lt;int&gt; 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 3…
+## $ perc_not_distracted &lt;int&gt; 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 9…
+## $ perc_no_previous    &lt;int&gt; 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 8…
+## $ PPIL                &lt;chr&gt; &quot;insurance_premiums&quot;, &quot;insurance_premiums&quot;, &quot;insu…
+## $ `Cost(IP &amp; L)`      &lt;dbl&gt; 784.55, 784.55, 784.55, 784.55, 784.55, 784.55, 7…
+## $ rate.male           &lt;dbl&gt; 363.7, 345.7, 340.7, 335.9, 330.1, 328.1, 327.9, …
+## $ LCL95.male          &lt;dbl&gt; 311.1, 274.2, 304.5, 288.9, 293.4, 255.9, 261.4, …
+## $ UCL95.male          &lt;dbl&gt; 423.2, 431.4, 380.9, 389.1, 370.6, 416.6, 408.0, …
+## $ rate.female         &lt;dbl&gt; 151.0, 140.5, 182.3, 185.3, 172.0, 124.1, 174.2, …
+## $ LCL95.female        &lt;dbl&gt; 123.6, 102.8, 161.3, 157.2, 151.4, 88.5, 133.3, 1…
+## $ UCL95.female        &lt;dbl&gt; 183.6, 189.7, 205.5, 217.5, 195.0, 171.7, 225.4, …
+## $ county              &lt;I&lt;chr&gt;&gt; Pickens County, Bullock County, Russell County…
+## $ PIL                 &lt;dbl&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1…</code></pre>
+<div id="introduction" class="section level1">
+<h1>Introduction</h1>
+<p>#The two dataset that I have decided to use for this Explorartory Data Anaylsis is a dataset named bad_drivers and another data set named USCancerRates. At first glance, these two dataset don’t have anything in common since one dealt with Cancer rates and the other dealt with factors contributing to inattentive drivers. I’ve decided to use this two dataset because I wanted to see if there was a plausible correction between inattentive drivers and cancer rates. Although, I know that there will not be a potential association data wise, these two dataset does show two of the top causes of death in America.
+#The USCancerRates dataset contain 3041 observations of 8 variables. Those variables are rate.male, LCL95.male, UCL.95.male,rate.female, LCL.95 female, UCL.95 female, UCL.95 female, state, and county. The data was obtained by the National Cancer Institute and made public through The National Vital Statistics System. I am instesting in this dataset because I love doing research on cancer. The second dataset involves bad drivers. It contains 51 rows of observation involving 8 variables. The variables are state, num_drivers, perc_speeding,perc_alcohol,perc_not_distracted, perc_no_pervious,insurance_premiums, and losses. The data came from the story “Dear Mona, which state has the worst drivers?”. I’m interested in this dataset because I see bad drivers everyday and I want to see if there a correlation between bad driving and getting cancer.
+—
+# MANOVA Testing</p>
+<pre class="r"><code>ggplot(MTP3, aes(x =rate.female, y = rate.male)) +
+geom_point(alpha = .5) + geom_density_2d(h=2) + coord_fixed() + facet_wrap(~PPIL)</code></pre>
+<p><img src="/Project2_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
+<pre class="r"><code>covmats&lt;-MTP3%&gt;%group_by(PPIL)%&gt;%do(covs=cov(.[2:3])) 
+for(i in 1:3){print(covmats$covs[i])}</code></pre>
+<pre><code>## [[1]]
+##               num_drivers perc_speeding
+## num_drivers     12.832006      1.786393
+## perc_speeding    1.786393     91.652336
+## 
+## [[1]]
+##               num_drivers perc_speeding
+## num_drivers     12.832006      1.786393
+## perc_speeding    1.786393     91.652336
+## 
+## [[1]]
+## NULL</code></pre>
+<pre class="r"><code>man1&lt;-manova(cbind(rate.female,rate.male)~PPIL, data=MTP3)
+summary(man1)</code></pre>
+<pre><code>##             Df    Pillai   approx F num Df den Df Pr(&gt;F)
+## PPIL         1 2.381e-30 7.0632e-27      2   5933      1
+## Residuals 5934</code></pre>
+<div id="after-running-the-manova-test-the-results-was-not-signifant.-the-p-value-was-1-which-was-higher-than-0.05.-since-the-result-was-not-signifiant-further-testing-was-not-needed.-however-in-the-event-that-the-result-from-the-manova-test-was-significant-the-following-tests-would-have-been-conducted.-since-there-are-two-numeric-response-variables-with-a-categorical-predictor-variable-with-two-level-there-will-be-two-anova-test-conducted.-no-t-test-would-be-needed-because-the-anova-test-would-have-told-you-that-the-two-group-differed.-in-total-three-test-will-be-conducted-one-manova-and-2-anova.-the-probablity-of-at-least-one-type-1-error-is-equal-to-alpha-which-is-0.05." class="section level2">
+<h2># After running the MANOVA test, the results was not signifant. The p-value was 1, which was higher than 0.05. Since the result was not signifiant, further testing was not needed. However, in the event that the result from the MANOVA test was significant, the following tests would have been conducted. Since there are two numeric response variables with a categorical predictor variable with two level, there will be two anova test conducted. No t-test would be needed because the anova test would have told you that the two group differed. In total, three test will be conducted; one MANOVA, and 2 ANOVA. The probablity of at least one type 1 error is equal to alpha, which is 0.05.</h2>
+</div>
+</div>
+<div id="randomization-test" class="section level1">
+<h1>Randomization Test</h1>
+<pre class="r"><code>rate.male1&lt;-c(363.7,345.7,340.7,335.9,330.1,328.1,327.9,327.4,323.6,321.4)
+rate.female1&lt;-c(151.0,140.5,182.3,185.3,172.0,124.1,174.2,157.7,184.5,161.4)
+
+rrmf&lt;-data.frame(condition=c(rep(&quot;rate.male1&quot;,10),rep(&quot;rate.female1&quot;,10)),time=c(rate.male1,rate.female1))
+head(rrmf)</code></pre>
+<pre><code>##    condition  time
+## 1 rate.male1 363.7
+## 2 rate.male1 345.7
+## 3 rate.male1 340.7
+## 4 rate.male1 335.9
+## 5 rate.male1 330.1
+## 6 rate.male1 328.1</code></pre>
+<pre class="r"><code>ggplot(rrmf,aes(time,fill=condition))+geom_histogram(bins=6.5)+facet_wrap(~condition,ncol=2)+theme_classic()</code></pre>
+<p><img src="/Project2_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<pre class="r"><code>rand_dist&lt;-vector()
+
+rrmf%&gt;%group_by(condition)%&gt;%summarize(s=sd(time))%&gt;%summarize(diff(s))</code></pre>
+<pre><code>## # A tibble: 1 x 1
+##   `diff(s)`
+##       &lt;dbl&gt;
+## 1     -7.61</code></pre>
+<pre class="r"><code>for(i in 1:5000){ 
+new&lt;-data.frame(time=sample(rrmf$time),condition=rrmf$condition)
+rand_dist[i]&lt;-mean(new[new$condition==&quot;rate.female1&quot;,]$time)-
+              mean(new[new$condition==&quot;rate.male1&quot;,]$time)
+}
+
+mean(rand_dist&lt;- -7.612046)*2</code></pre>
+<pre><code>## [1] -15.22409</code></pre>
+<pre class="r"><code>{hist(rand_dist,main=&quot;&quot;,ylab=&quot;&quot;); abline(v = -7.612046,col=&quot;red&quot;)}</code></pre>
+<p><img src="/Project2_files/figure-html/unnamed-chunk-3-2.png" width="672" /></p>
+<pre class="r"><code>mean(rand_dist&gt;15.22409)*2</code></pre>
+<pre><code>## [1] 0</code></pre>
+<pre class="r"><code>t.test(data=rrmf,time~condition)</code></pre>
+<pre><code>## 
+##  Welch Two Sample t-test
+## 
+## data:  time by condition
+## t = -22.527, df = 15.117, p-value = 4.789e-13
+## alternative hypothesis: true difference in means is not equal to 0
+## 95 percent confidence interval:
+##  -187.3325 -154.9675
+## sample estimates:
+## mean in group rate.female1   mean in group rate.male1 
+##                     163.30                     334.45</code></pre>
+<div id="ho-the-rate-of-male-is-more-significant-than-the-rate-of-female.-ha-the-rate-of-male-is-not-significant-than-the-rate-of-famle.-i-started-the-randomization-test-by-making-two-new-vectors.-i-called-the-first-vector-rate.female1-and-the-second-vector-rate.male1.-the-first-vector-contained-the-first-10-values-of-rate.female-from-the-mtp3-dataset.-the-second-vector-contained-the-first-10-values-of-rate.male-from-the-mtp3-dataset.-after-doing-the-randominzation-test-the-p-value-was-0.-this-is-common-to-have.-i-also-did-a-welch-two-sample-t-test-with-the-two-vectors.-the-p-value-was-4.789e-13.-the-p-value-after-the-t-test-was-4.789e-13-compared-to-0-from-the-randomization-test." class="section level2">
+<h2># Ho: The rate of male is more significant than the rate of female. Ha: The rate of male is not significant than the rate of famle. I started the randomization test by making two new vectors. I called the first vector rate.female1 and the second vector rate.male1. The first vector contained the first 10 values of rate.female from the MTP3 dataset. The second vector contained the first 10 values of rate.male from the MTP3 dataset. After doing the randominzation test, the p-value was 0. This is common to have. I also did a Welch Two Sample T-test with the two vectors. The p-value was 4.789e-13. The p-value after the t-test was 4.789e-13 compared to 0 from the randomization test.</h2>
+</div>
+</div>
+<div id="linear-regression-model" class="section level1">
+<h1>Linear Regression Model</h1>
+<pre class="r"><code>MTP3$rate.male_c&lt;-MTP3$rate.male-mean(MTP3$rate.male)
+MTP3$num_drivers_c&lt;-MTP3$num_drivers-mean(MTP3$num_drivers)
+
+fit&lt;-lm(rate.female~rate.male_c*num_drivers_c,data = MTP3)
+summary(fit)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = rate.female ~ rate.male_c * num_drivers_c, data = MTP3)
+## 
+## Residuals:
+##    Min     1Q Median     3Q    Max 
+## -96.88 -12.34   0.38  11.28 190.91 
+## 
+## Coefficients:
+##                             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)                1.649e+02  2.825e-01 583.941   &lt;2e-16 ***
+## rate.male_c                2.357e-01  6.455e-03  36.518   &lt;2e-16 ***
+## num_drivers_c             -1.678e-01  7.882e-02  -2.128   0.0333 *  
+## rate.male_c:num_drivers_c -7.926e-04  1.832e-03  -0.433   0.6654    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 21.16 on 5932 degrees of freedom
+## Multiple R-squared:  0.1894, Adjusted R-squared:  0.189 
+## F-statistic: 462.1 on 3 and 5932 DF,  p-value: &lt; 2.2e-16</code></pre>
+<pre class="r"><code>new1&lt;-MTP3
+new1$rate.male_c&lt;-mean(MTP3$rate.male_c)
+new1$mean&lt;-predict(fit,new1)
+new1$rate.male_c&lt;-mean(MTP3$rate.male_c)+sd(MTP3$rate.male_c)
+new1$plus.sd&lt;-predict(fit,new1)
+new1$rate.male_c&lt;-mean(MTP3$rate.male_c)-sd(MTP3$rate.male_c)
+new1$minus.sd&lt;-predict(fit,new1)
+newint&lt;-new1%&gt;%select(rate.female,num_drivers_c,mean,plus.sd,minus.sd)%&gt;%gather(rate.male,value,-rate.female,-num_drivers_c)
+
+
+mycols&lt;-c(&quot;#619CFF&quot;,&quot;#F8766D&quot;,&quot;#00BA38&quot;)
+names(mycols)&lt;-c(&quot;-1 sd&quot;,&quot;mean&quot;,&quot;+1 sd&quot;)
+mycols=as.factor(mycols)
+
+ggplot(MTP3,aes(rate.male_c,num_drivers_c,rate.female),group=mycols)+geom_point()+geom_line(data=new1,aes(y=mean,color=&quot;mean&quot;))+geom_line(data=new1,aes(y=plus.sd,color=&quot;+1 sd&quot;))+geom_line(data=new1,aes(y=minus.sd,color=&quot;-1 sd&quot;))+scale_color_manual(values=mycols)+labs(color=&quot;rate.female (cont)&quot;)+theme(legend.position=c(.9,.2))</code></pre>
+<p><img src="/Project2_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<pre class="r"><code>resRM&lt;-lm(rate.female~rate.male_c,data = MTP3)$residuals
+resUCL&lt;-lm(rate.female~num_drivers_c,data = MTP3)$residuals
+coef(lm(resRM~resUCL))</code></pre>
+<pre><code>##   (Intercept)        resUCL 
+## -7.212312e-15  8.176506e-01</code></pre>
+<pre class="r"><code>coef(lm(rate.male~num_drivers_c+rate.female,data = MTP3))</code></pre>
+<pre><code>##   (Intercept) num_drivers_c   rate.female 
+##   128.1710437     2.4189164     0.7848703</code></pre>
+<pre class="r"><code>resids&lt;-fit$residuals 
+fitvals&lt;-fit$fitted.values
+
+ggplot()+geom_point(aes(fitvals,resids))+geom_hline(yintercept=0, col=&quot;red&quot;)</code></pre>
+<p><img src="/Project2_files/figure-html/unnamed-chunk-4-2.png" width="672" /></p>
+<pre class="r"><code>bptest(fit)</code></pre>
+<pre><code>## 
+##  studentized Breusch-Pagan test
+## 
+## data:  fit
+## BP = 38.925, df = 3, p-value = 1.8e-08</code></pre>
+<pre class="r"><code>ggplot()+geom_histogram(aes(resids),bins=20)</code></pre>
+<p><img src="/Project2_files/figure-html/unnamed-chunk-4-3.png" width="672" /></p>
+<pre class="r"><code>ggplot()+geom_qq(aes(sample=resids))+geom_qq_line(aes(sample=resids), color=&#39;red&#39;)</code></pre>
+<p><img src="/Project2_files/figure-html/unnamed-chunk-4-4.png" width="672" /></p>
+<pre class="r"><code>ks.test(resids, &quot;pnorm&quot;, sd=sd(resids))</code></pre>
+<pre><code>## Warning in ks.test(resids, &quot;pnorm&quot;, sd = sd(resids)): ties should not be present
+## for the Kolmogorov-Smirnov test</code></pre>
+<pre><code>## 
+##  One-sample Kolmogorov-Smirnov test
+## 
+## data:  resids
+## D = 0.052106, p-value = 2.01e-14
+## alternative hypothesis: two-sided</code></pre>
+<pre class="r"><code>coeftest(fit)[,1:2]</code></pre>
+<pre><code>##                                Estimate  Std. Error
+## (Intercept)                1.649431e+02 0.282465166
+## rate.male_c                2.357268e-01 0.006455170
+## num_drivers_c             -1.677586e-01 0.078816802
+## rate.male_c:num_drivers_c -7.925756e-04 0.001832305</code></pre>
+<pre class="r"><code>coeftest(fit, vcov=vcovHC(fit))[,1:2]</code></pre>
+<pre><code>##                                Estimate  Std. Error
+## (Intercept)                1.649431e+02 0.283243049
+## rate.male_c                2.357268e-01 0.009022290
+## num_drivers_c             -1.677586e-01 0.076985708
+## rate.male_c:num_drivers_c -7.925756e-04 0.001984384</code></pre>
+<pre class="r"><code>SST &lt;- sum((MTP3$rate.female-mean(MTP3$rate.female))^2)
+SSR &lt;- sum((fit$fitted.values-mean(MTP3$rate.female))^2) 
+SSE &lt;- sum(fit$residuals^2) 
+
+SSR/SST</code></pre>
+<pre><code>## [1] 0.1894397</code></pre>
+<pre class="r"><code>summary(fit)$r.sq</code></pre>
+<pre><code>## [1] 0.1894397</code></pre>
+<div id="when-a-linear-regression-model-was-conducted-with-the-response-variable-rate.female.-the-coefficients-was-the-rate.female-rate.male_c-and-num_drivers_c-both-of-which-was-mean-centered-because-they-are-numeric-variables.-the-final-coefficient-was-rate.male_cnum_drivers_c-which-was-the-interaction-between-the-two-predictor-variables.-when-speaking-about-the-coefficients-estimate-the-first-row-is-the-intercept-it-is-the-expected-values-of-what-the-number-of-driver-and-rate.male-should-be-in-regards-to-rate.female.-the-following-rows-after-the-intercept-are-the-slopes.-the-slopes-indicates-the-effect-that-the-predictor-variables-have-on-the-response-variable-in-this-case-the-rate.female.-the-results-of-the-linear-regression-model-are-as-followed-the-intercept-rate.male_c-and-num_drivers_c-were-the-only-significant-coefficient-with-a-p-value-less-than-0.05.-the-last-coefficients-rate.male_cnum_drivers_c-was-the-only-coefficient-that-was-not-significant-because-it-had-a-p-value-of-0.6654.-the-interaction-plot-shows-a-cluster-of-points-between--200-and-200.-when-looking-at-linearity-and-homoskedasticity-graphically-both-looked-okay.-but-the-breusch-pagan-test-was-conducted-as-well-to-confirmed-that-the-assumption-was-met.-with-a-p-value-of-1.8e-08-the-assumption-was-acceptable.-when-checking-on-the-normality-both-ggplot-does-look-normal-as-well.-but-a-kolmogorov-smirnov-test-was-conducted-as-well-to-confirmed-that-the-assumption-was-met.-the-p-value-was-less-than-0.05-which-mean-that-the-assumption-was-met.-after-conducting-the-coeftest-for-the-normal-theory-ses-and-robust-standard-errors-it-is-found-that-the-estimate-for-both-normal-theory-ses-and-robust-standard-errors-are-the-same.-however-there-were-some-changes-in-the-std.-error-between-the-normal-theory-ses-and-robust-standard-errors.-compared-to-the-normal-theory-ses-the-robust-standard-errors-had-a-slighty-higher-standard-error-for-3-of-the-4-coefficient.-those-coefficients-were-intercept-rate.male_c-and-rate.male_cnum_drivers_c.-the-proportion-of-the-variation-in-the-outcome-of-the-model-was-0.1894397." class="section level2">
+<h2># When a linear regression model was conducted with the response variable rate.female. The coefficients was the rate.female, rate.male_c, and num_drivers_c; both of which was mean centered because they are numeric variables. The final coefficient was rate.male_c:num_drivers_c; which was the interaction between the two predictor variables. When speaking about the coefficients estimate, the first row is the intercept; it is the expected values of what the “number of driver”&quot; and “rate.male” should be in regards to rate.female. The following rows after the intercept are the slopes. The slopes indicates the effect that the predictor variables have on the response variable; in this case the rate.female. The results of the linear regression model are as followed; the intercept, rate.male_c, and num_drivers_c were the only significant coefficient with a p-value less than 0.05. The last coefficients, rate.male_c:num_drivers_c was the only coefficient that was not significant because it had a p-value of 0.6654. The interaction plot shows a cluster of points between -200 and 200. When looking at linearity and homoskedasticity graphically, both looked okay. But, the Breusch-Pagan test was conducted as well to confirmed that the assumption was met. With a p-value of 1.8e-08, the assumption was acceptable. When checking on the normality, both ggplot does look normal as well. But, a Kolmogorov-Smirnov Test was conducted as well to confirmed that the assumption was met. The p-value was less than 0.05; which mean that the assumption was met. After conducting the coeftest for the normal-theory SEs and Robust standard errors, it is found that the estimate for both normal-theory SEs and robust standard errors are the same. However, there were some changes in the Std. Error between the normal-theory SEs and robust standard errors. Compared to the normal-theory SEs, the robust standard errors had a slighty higher standard error for 3 of the 4 coefficient. Those coefficients were Intercept, rate.male_c, and rate.male_c:num_drivers_c. The proportion of the variation in the outcome of the model was 0.1894397.</h2>
+</div>
+</div>
+<div id="rerun-regression-model" class="section level1">
+<h1>Rerun Regression Model</h1>
+<pre class="r"><code>fit&lt;-lm(rate.female~rate.male_c*num_drivers_c,data = MTP3)
+summary(fit)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = rate.female ~ rate.male_c * num_drivers_c, data = MTP3)
+## 
+## Residuals:
+##    Min     1Q Median     3Q    Max 
+## -96.88 -12.34   0.38  11.28 190.91 
+## 
+## Coefficients:
+##                             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)                1.649e+02  2.825e-01 583.941   &lt;2e-16 ***
+## rate.male_c                2.357e-01  6.455e-03  36.518   &lt;2e-16 ***
+## num_drivers_c             -1.678e-01  7.882e-02  -2.128   0.0333 *  
+## rate.male_c:num_drivers_c -7.926e-04  1.832e-03  -0.433   0.6654    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 21.16 on 5932 degrees of freedom
+## Multiple R-squared:  0.1894, Adjusted R-squared:  0.189 
+## F-statistic: 462.1 on 3 and 5932 DF,  p-value: &lt; 2.2e-16</code></pre>
+<pre class="r"><code>coeftest(fit)[,1:2]</code></pre>
+<pre><code>##                                Estimate  Std. Error
+## (Intercept)                1.649431e+02 0.282465166
+## rate.male_c                2.357268e-01 0.006455170
+## num_drivers_c             -1.677586e-01 0.078816802
+## rate.male_c:num_drivers_c -7.925756e-04 0.001832305</code></pre>
+<pre class="r"><code>coeftest(fit, vcov=vcovHC(fit))[,1:2]</code></pre>
+<pre><code>##                                Estimate  Std. Error
+## (Intercept)                1.649431e+02 0.283243049
+## rate.male_c                2.357268e-01 0.009022290
+## num_drivers_c             -1.677586e-01 0.076985708
+## rate.male_c:num_drivers_c -7.925756e-04 0.001984384</code></pre>
+<pre class="r"><code>samp_distn&lt;-replicate(5000,{
+  boot_dat&lt;-boot_dat&lt;-MTP3[sample(nrow(MTP3),replace = TRUE),]
+  fit&lt;-lm(rate.female~rate.male_c*num_drivers_c,data = boot_dat)
+  coef(fit)
+})
+
+samp_distn%&gt;%t%&gt;%as.data.frame%&gt;%summarize_all(sd)</code></pre>
+<pre><code>##   (Intercept) rate.male_c num_drivers_c rate.male_c:num_drivers_c
+## 1   0.2797763 0.008916636    0.07669202               0.001978833</code></pre>
+<pre class="r"><code>samp_distn%&gt;%t%&gt;%as.data.frame%&gt;%gather%&gt;%group_by(key)%&gt;% summarize(lower=quantile(value,.025), upper=quantile(value,.975))</code></pre>
+<pre><code>## # A tibble: 4 x 3
+##   key                           lower     upper
+##   &lt;chr&gt;                         &lt;dbl&gt;     &lt;dbl&gt;
+## 1 (Intercept)               164.      166.     
+## 2 num_drivers_c              -0.322    -0.0207 
+## 3 rate.male_c                 0.219     0.253  
+## 4 rate.male_c:num_drivers_c  -0.00460   0.00316</code></pre>
+<pre class="r"><code>fit2&lt;-lm(rate.female ~ rate.male_c * num_drivers_c, data=MTP3) 
+resids&lt;-fit2$residuals 
+fitted&lt;-fit2$fitted.values
+
+resid_resamp&lt;-replicate(5000,{ 
+  new_resids&lt;-sample(resids,replace=TRUE) 
+  newdat&lt;-MTP3 
+  newdat$new_y&lt;-fitted+new_resids
+fit2&lt;-lm(new_y ~ rate.male_c * num_drivers_c, data = newdat)
+coef(fit2)
+})
+
+resid_resamp%&gt;%t%&gt;%as.data.frame%&gt;%summarize_all(sd)</code></pre>
+<pre><code>##   (Intercept) rate.male_c num_drivers_c rate.male_c:num_drivers_c
+## 1   0.2840403 0.006475498     0.0783563               0.001817423</code></pre>
+<pre class="r"><code>resid_resamp%&gt;%t%&gt;%as.data.frame%&gt;%gather%&gt;%group_by(key)%&gt;% summarize(lower=quantile(value,.025), upper=quantile(value,.975))</code></pre>
+<pre><code>## # A tibble: 4 x 3
+##   key                           lower     upper
+##   &lt;chr&gt;                         &lt;dbl&gt;     &lt;dbl&gt;
+## 1 (Intercept)               164.      166.     
+## 2 num_drivers_c              -0.320    -0.0103 
+## 3 rate.male_c                 0.223     0.249  
+## 4 rate.male_c:num_drivers_c  -0.00435   0.00276</code></pre>
+<pre class="r"><code>coeftest(fit2)[,1:2]</code></pre>
+<pre><code>##                                Estimate  Std. Error
+## (Intercept)                1.649431e+02 0.282465166
+## rate.male_c                2.357268e-01 0.006455170
+## num_drivers_c             -1.677586e-01 0.078816802
+## rate.male_c:num_drivers_c -7.925756e-04 0.001832305</code></pre>
+<pre class="r"><code>coeftest(fit2, vcov=vcovHC(fit2))[,1:2]</code></pre>
+<pre><code>##                                Estimate  Std. Error
+## (Intercept)                1.649431e+02 0.283243049
+## rate.male_c                2.357268e-01 0.009022290
+## num_drivers_c             -1.677586e-01 0.076985708
+## rate.male_c:num_drivers_c -7.925756e-04 0.001984384</code></pre>
+<pre class="r"><code>samp_distn%&gt;%t%&gt;%as.data.frame%&gt;%summarize_all(sd)</code></pre>
+<pre><code>##   (Intercept) rate.male_c num_drivers_c rate.male_c:num_drivers_c
+## 1   0.2797763 0.008916636    0.07669202               0.001978833</code></pre>
+<pre class="r"><code>resid_resamp%&gt;%t%&gt;%as.data.frame%&gt;%summarize_all(sd)</code></pre>
+<pre><code>##   (Intercept) rate.male_c num_drivers_c rate.male_c:num_drivers_c
+## 1   0.2840403 0.006475498     0.0783563               0.001817423</code></pre>
+<div id="after-rerunning-the-regression-model-there-were-no-changes-in-the-ses-in-the-rerunned-model-compared-to-the-original-ses-and-the-robust-ses.-both-regression-model-had-similar-output.-there-were-not-a-significant-different-in-the-p-value-either-given-that-the-output-for-both-model-were-really-similar." class="section level2">
+<h2># After rerunning the regression model, there were no changes in the SEs in the rerunned model compared to the original SEs and the robust SEs. Both regression model had similar output. There were not a significant different in the p-value either given that the output for both model were really similar.</h2>
+</div>
+</div>
+<div id="logistic-regression-model" class="section level1">
+<h1>Logistic Regression Model</h1>
+<pre class="r"><code>MTP3$outcome&lt;-factor(MTP3$PPIL,levels=c(&quot;insurance_premiums&quot;,&quot;losses&quot;))
+
+fit3&lt;-glm(PIL~rate.male+rate.female+perc_not_distracted,data = MTP3,family = binomial(link = &quot;logit&quot;))
+summary(fit3)</code></pre>
+<pre><code>## 
+## Call:
+## glm(formula = PIL ~ rate.male + rate.female + perc_not_distracted, 
+##     family = binomial(link = &quot;logit&quot;), data = MTP3)
+## 
+## Deviance Residuals: 
+##    Min      1Q  Median      3Q     Max  
+## -1.177  -1.177   0.000   1.177   1.177  
+## 
+## Coefficients:
+##                       Estimate Std. Error z value Pr(&gt;|z|)
+## (Intercept)          5.634e-14  2.485e-01       0        1
+## rate.male           -2.269e-17  6.587e-04       0        1
+## rate.female          6.299e-18  1.227e-03       0        1
+## perc_not_distracted -5.980e-16  1.569e-03       0        1
+## 
+## (Dispersion parameter for binomial family taken to be 1)
+## 
+##     Null deviance: 8229  on 5935  degrees of freedom
+## Residual deviance: 8229  on 5932  degrees of freedom
+## AIC: 8237
+## 
+## Number of Fisher Scoring iterations: 2</code></pre>
+<pre class="r"><code>coeftest(fit3)</code></pre>
+<pre><code>## 
+## z test of coefficients:
+## 
+##                        Estimate  Std. Error z value Pr(&gt;|z|)
+## (Intercept)          5.6337e-14  2.4845e-01       0        1
+## rate.male           -2.2693e-17  6.5870e-04       0        1
+## rate.female          6.2986e-18  1.2270e-03       0        1
+## perc_not_distracted -5.9798e-16  1.5689e-03       0        1</code></pre>
+<pre class="r"><code>coef(fit3)%&gt;%round(5)%&gt;%data.frame</code></pre>
+<pre><code>##                     .
+## (Intercept)         0
+## rate.male           0
+## rate.female         0
+## perc_not_distracted 0</code></pre>
+<pre class="r"><code>coef(fit3)%&gt;%exp%&gt;%round(5)%&gt;%data.frame</code></pre>
+<pre><code>##                     .
+## (Intercept)         1
+## rate.male           1
+## rate.female         1
+## perc_not_distracted 1</code></pre>
+<pre class="r"><code>exp(coef(fit3))</code></pre>
+<pre><code>##         (Intercept)           rate.male         rate.female perc_not_distracted 
+##                   1                   1                   1                   1</code></pre>
+<pre class="r"><code>odds2prob&lt;-function(odds){odds/(1+odds)}
+
+odds2prob(-31.2553253342)</code></pre>
+<pre><code>## [1] 1.033052</code></pre>
+<pre class="r"><code>pca1&lt;-princomp(MTP3[c(&#39;rate.male&#39;,&#39;rate.female&#39;,&#39;perc_not_distracted&#39;)])
+MTP3$predictor&lt;-pca1$scores[,1]
+MTP3$prob&lt;-predict(fit3,type=&quot;response&quot;)
+
+ggplot(MTP3, aes(predictor,prob))+geom_point(aes(color=outcome),alpha=.5,size=3)</code></pre>
+<p><img src="/Project2_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<pre class="r"><code>tdat&lt;-MTP3%&gt;%mutate(prob=predict(fit3,type = &quot;response&quot;),prediction=ifelse(prob&gt;.5,1,0))
+classify&lt;-tdat%&gt;%transmute(prob,prediction,truth=PIL)
+
+
+# Confusion Table and Calculations
+table(prediction=classify$prediction,truth=classify$truth)%&gt;%addmargins()</code></pre>
+<pre><code>##           truth
+## prediction    0    1  Sum
+##        0   2092 2092 4184
+##        1    876  876 1752
+##        Sum 2968 2968 5936</code></pre>
+<pre class="r"><code># Accurary
+(940+2028)/5936</code></pre>
+<pre><code>## [1] 0.5</code></pre>
+<pre class="r"><code># Sensitivity(TPR)
+(2028/2968)</code></pre>
+<pre><code>## [1] 0.6832884</code></pre>
+<pre class="r"><code># Specificity(TNR)
+(940/2968)</code></pre>
+<pre><code>## [1] 0.3167116</code></pre>
+<pre class="r"><code>#Precision (PPV)
+(2028/4056)</code></pre>
+<pre><code>## [1] 0.5</code></pre>
+<pre class="r"><code># Generating Logit vs. Density Plot
+logit&lt;-function(p)log(odds(p))
+
+tdat$logit&lt;-predict(fit3)
+tdat$outcome&lt;-factor(tdat$outcome,levels=c(&quot;insurance_premiums&quot;,&quot;losses&quot;))
+ggplot(tdat,aes(logit, fill=outcome))+geom_density(alpha=.3)+
+  geom_vline(xintercept=0,lty=2)</code></pre>
+<p><img src="/Project2_files/figure-html/unnamed-chunk-6-2.png" width="672" /></p>
+<pre class="r"><code># Generating ROC curve and Calculating AUC 
+sens&lt;-function(p,data=tdat, y=PIL) mean(tdat[tdat$PIL==1,]$prob&gt;p)
+spec&lt;-function(p,data=tdat, y=PIL) mean(tdat[tdat$PIL==0,]$prob&lt;p)
+
+sensitivity&lt;-sapply(seq(0,1,.01),sens,tdat)
+specificity&lt;-sapply(seq(0,1,.01),spec,tdat)
+
+ROC1&lt;-data.frame(sensitivity,specificity,cutoff=seq(0,1,.01))
+ROC1%&gt;%gather(key,rate,-cutoff)%&gt;%ggplot(aes(cutoff,rate,color=key))+geom_path()+ geom_vline(xintercept=c(.1,.5),lty=2,color=&quot;gray50&quot;)</code></pre>
+<p><img src="/Project2_files/figure-html/unnamed-chunk-6-3.png" width="672" /></p>
+<pre class="r"><code>ROC1$TPR&lt;-sensitivity 
+ROC1$FPR&lt;-1-specificity
+ROC1%&gt;%ggplot(aes(FPR,TPR))+geom_path(size=1.5)+geom_segment(aes(x=0,y=0,xend=1,yend=1),lty=2)+ scale_x_continuous(limits = c(0,1))</code></pre>
+<p><img src="/Project2_files/figure-html/unnamed-chunk-6-4.png" width="672" /></p>
+<pre class="r"><code>ROCplot&lt;-ggplot(tdat)+geom_roc(aes(d=PIL,m=prob), n.cuts=0)
+ROCplot</code></pre>
+<p><img src="/Project2_files/figure-html/unnamed-chunk-6-5.png" width="672" /></p>
+<pre class="r"><code>calc_auc(ROCplot)</code></pre>
+<pre><code>##   PANEL group AUC
+## 1     1    -1 0.5</code></pre>
+<pre class="r"><code># K10 Fold CV
+tdat1= subset(tdat, select = -c(county))
+
+
+class_diag&lt;-function(probs,truth){
+tab&lt;-table(factor(probs&gt;.5,levels=c(&quot;FALSE&quot;,&quot;TRUE&quot;)),truth) 
+acc=sum(diag(tab))/sum(tab)
+sens=tab[2,2]/colSums(tab)[2]
+spec=tab[1,1]/colSums(tab)[1]
+ppv=tab[2,2]/rowSums(tab)[2]
+if(is.numeric(truth)==FALSE &amp; is.logical(truth)==FALSE) truth&lt;-as.numeric(truth)-1
+  #CALCULATE EXACT AUC
+ord&lt;-order(probs, decreasing=TRUE)
+probs &lt;- probs[ord]; truth &lt;- truth[ord]
+TPR=cumsum(truth)/max(1,sum(truth)) 
+FPR=cumsum(!truth)/max(1,sum(!truth))
+dup&lt;-c(probs[-1]&gt;=probs[-length(probs)], FALSE) 
+TPR&lt;-c(0,TPR[!dup],1); FPR&lt;-c(0,FPR[!dup],1)
+n &lt;- length(TPR)
+auc&lt;- sum( ((TPR[-1]+TPR[-n])/2) * (FPR[-1]-FPR[-n]) )
+data.frame(acc,sens,spec,ppv,auc)
+}
+
+
+set.seed(1234)
+k = 10
+
+data &lt;- tdat1[sample(nrow(tdat1)), ]
+folds &lt;- cut(seq(1:nrow(tdat1)), breaks = k, labels = F)
+diags &lt;- NULL
+
+for (i in 1:k) {
+    train &lt;- data[folds != i, ]
+    test &lt;- data[folds == i, ]
+    truth &lt;- test$PIL
+    fit5 &lt;- glm(PIL ~ ., data = train, family = &quot;binomial&quot;(link = &quot;logit&quot;))
+    probs2 &lt;- predict(fit5, newdata = test, type = &quot;response&quot;)
+    diags &lt;- rbind(diags, class_diag(probs2, truth))
+}</code></pre>
+<pre><code>## Warning: glm.fit: algorithm did not converge</code></pre>
+<pre><code>## Warning in predict.lm(object, newdata, se.fit, scale = 1, type = if (type == :
+## prediction from a rank-deficient fit may be misleading</code></pre>
+<pre><code>## Warning: glm.fit: algorithm did not converge</code></pre>
+<pre><code>## Warning in predict.lm(object, newdata, se.fit, scale = 1, type = if (type == :
+## prediction from a rank-deficient fit may be misleading</code></pre>
+<pre><code>## Warning: glm.fit: algorithm did not converge</code></pre>
+<pre><code>## Warning in predict.lm(object, newdata, se.fit, scale = 1, type = if (type == :
+## prediction from a rank-deficient fit may be misleading</code></pre>
+<pre><code>## Warning: glm.fit: algorithm did not converge</code></pre>
+<pre><code>## Warning in predict.lm(object, newdata, se.fit, scale = 1, type = if (type == :
+## prediction from a rank-deficient fit may be misleading</code></pre>
+<pre><code>## Warning: glm.fit: algorithm did not converge</code></pre>
+<pre><code>## Warning in predict.lm(object, newdata, se.fit, scale = 1, type = if (type == :
+## prediction from a rank-deficient fit may be misleading</code></pre>
+<pre><code>## Warning: glm.fit: algorithm did not converge</code></pre>
+<pre><code>## Warning in predict.lm(object, newdata, se.fit, scale = 1, type = if (type == :
+## prediction from a rank-deficient fit may be misleading</code></pre>
+<pre><code>## Warning: glm.fit: algorithm did not converge</code></pre>
+<pre><code>## Warning in predict.lm(object, newdata, se.fit, scale = 1, type = if (type == :
+## prediction from a rank-deficient fit may be misleading</code></pre>
+<pre><code>## Warning: glm.fit: algorithm did not converge</code></pre>
+<pre><code>## Warning in predict.lm(object, newdata, se.fit, scale = 1, type = if (type == :
+## prediction from a rank-deficient fit may be misleading</code></pre>
+<pre><code>## Warning: glm.fit: algorithm did not converge</code></pre>
+<pre><code>## Warning in predict.lm(object, newdata, se.fit, scale = 1, type = if (type == :
+## prediction from a rank-deficient fit may be misleading</code></pre>
+<pre><code>## Warning: glm.fit: algorithm did not converge</code></pre>
+<pre><code>## Warning in predict.lm(object, newdata, se.fit, scale = 1, type = if (type == :
+## prediction from a rank-deficient fit may be misleading</code></pre>
+<pre class="r"><code>apply(diags, 2, mean)</code></pre>
+<pre><code>##  acc sens spec  ppv  auc 
+##    1    1    1    1    1</code></pre>
+<div id="after-running-the-logistic-regression-the-coefficients-that-was-intercept-rate.male-rate.female-and-perc_not_distracted.-only-the-intercept-and-rate.female-had-a-negative-value-while-rate.male-and-perc_not_distracted-had-positive-value.-all-of-the-coefficients-had-a-p-value-of-one.-this-mean-that-they-were-not-significant.-when-calculating-the-accuracy-sensitivity-specificity-and-recall-the-following-were-the-results.-the-accuracy-was-0.5-the-sensitivity-was-0.6832884-the-specificity-was-0.3167116-and-the-recall-was-0.5.-after-generating-a-roc-curve-and-calculating-the-auc-the-result-was-really-bad.-the-auc-was-0.5-which-on-the-scale-is-really-bad.-this-probably-means-that-there-was-a-set-of-random-data-values-which-are-not-able-to-distinguish-between-true-and-false.-after-doing-the-k-fold-cv-accuracy-sensitivity-and-recall-all-had-a-value-of-1." class="section level2">
+<h2># After running the logistic regression, the coefficients that was intercept, rate.male, rate.female, and perc_not_distracted. Only the intercept and rate.female had a negative value, while rate.male, and perc_not_distracted had positive value. All of the coefficients had a p-value of one. This mean that they were not significant. When calculating the accuracy, sensitivity, specificity, and recall, the following were the results. The accuracy was 0.5, the sensitivity was 0.6832884, the specificity was 0.3167116, and the recall was 0.5. After generating a ROC curve and calculating the AUC, the result was really bad. The AUC was 0.5, which on the scale is really bad. This probably means that there was a set of random data values which are not able to distinguish between true and false. After doing the k-fold CV, Accuracy, Sensitivity, and Recall all had a value of 1.</h2>
+</div>
+</div>
+<div id="lasso" class="section level1">
+<h1>LASSO</h1>
+<pre class="r"><code># Lasso
+x = model.matrix(PIL~.,tdat1)[,-1]
+y&lt;-as.matrix(tdat1$PIL)
+
+cv&lt;-cv.glmnet(x,y,family=&quot;binomial&quot;,)
+glimpse(cv)</code></pre>
+<pre><code>## List of 11
+##  $ lambda    : num [1:72] 0.5 0.456 0.415 0.378 0.345 ...
+##  $ cvm       : num [1:72] 1.387 1.216 1.073 0.951 0.845 ...
+##  $ cvsd      : num [1:72] 1.46e-04 1.27e-04 1.07e-04 9.13e-05 7.86e-05 ...
+##  $ cvup      : num [1:72] 1.387 1.217 1.073 0.951 0.845 ...
+##  $ cvlo      : num [1:72] 1.387 1.216 1.073 0.951 0.845 ...
+##  $ nzero     : Named int [1:72] 0 2 2 2 2 2 2 2 2 2 ...
+##   ..- attr(*, &quot;names&quot;)= chr [1:72] &quot;s0&quot; &quot;s1&quot; &quot;s2&quot; &quot;s3&quot; ...
+##  $ call      : language cv.glmnet(x = x, y = y, family = &quot;binomial&quot;)
+##  $ name      : Named chr &quot;Binomial Deviance&quot;
+##   ..- attr(*, &quot;names&quot;)= chr &quot;deviance&quot;
+##  $ glmnet.fit:List of 13
+##   ..$ a0        : Named num [1:72] 9.46e-16 1.78e-01 3.43e-01 4.97e-01 6.43e-01 ...
+##   .. ..- attr(*, &quot;names&quot;)= chr [1:72] &quot;s0&quot; &quot;s1&quot; &quot;s2&quot; &quot;s3&quot; ...
+##   ..$ beta      :Formal class &#39;dgCMatrix&#39; [package &quot;Matrix&quot;] with 6 slots
+##   ..$ df        : int [1:72] 0 2 2 2 2 2 2 2 2 2 ...
+##   ..$ dim       : int [1:2] 68 72
+##   ..$ lambda    : num [1:72] 0.5 0.456 0.415 0.378 0.345 ...
+##   ..$ dev.ratio : num [1:72] 4.81e-15 1.23e-01 2.26e-01 3.14e-01 3.90e-01 ...
+##   ..$ nulldev   : num 8229
+##   ..$ npasses   : int 438
+##   ..$ jerr      : int 0
+##   ..$ offset    : logi FALSE
+##   ..$ classnames: chr [1:2] &quot;0&quot; &quot;1&quot;
+##   ..$ call      : language glmnet(x = x, y = y, family = &quot;binomial&quot;)
+##   ..$ nobs      : int 5936
+##   ..- attr(*, &quot;class&quot;)= chr [1:2] &quot;lognet&quot; &quot;glmnet&quot;
+##  $ lambda.min: num 0.000677
+##  $ lambda.1se: num 0.000677
+##  - attr(*, &quot;class&quot;)= chr &quot;cv.glmnet&quot;</code></pre>
+<pre class="r"><code>lasso&lt;-glmnet(x,y,family=&quot;binomial&quot;,lambda=cv$lambda.1se)
+coef(lasso)</code></pre>
+<pre><code>## 69 x 1 sparse Matrix of class &quot;dgCMatrix&quot;
+##                                s0
+## (Intercept)          7.297833e+00
+## stateAlaska          .           
+## stateArizona         .           
+## stateArkansas        .           
+## stateCalifornia      .           
+## stateColorado        .           
+## stateConnecticut     .           
+## stateDelaware        .           
+## stateFlorida         .           
+## stateGeorgia         .           
+## stateIdaho           .           
+## stateIllinois        .           
+## stateIndiana         .           
+## stateIowa            .           
+## stateKansas          .           
+## stateKentucky        .           
+## stateLouisiana       .           
+## stateMaine           .           
+## stateMaryland        .           
+## stateMassachusetts   .           
+## stateMichigan        .           
+## stateMinnesota       .           
+## stateMississippi     .           
+## stateMissouri        .           
+## stateMontana         .           
+## stateNebraska        .           
+## stateNevada          .           
+## stateNew Hampshire   .           
+## stateNew Jersey      .           
+## stateNew Mexico      .           
+## stateNew York        .           
+## stateNorth Carolina  .           
+## stateNorth Dakota    .           
+## stateOhio            .           
+## stateOklahoma        .           
+## stateOregon          .           
+## statePennsylvania    .           
+## stateRhode Island    .           
+## stateSouth Carolina  .           
+## stateSouth Dakota    .           
+## stateTennessee       .           
+## stateTexas           .           
+## stateUtah            .           
+## stateVermont         .           
+## stateVirginia        .           
+## stateWashington      .           
+## stateWest Virginia   .           
+## stateWisconsin       .           
+## stateWyoming         .           
+## num_drivers          .           
+## perc_speeding        .           
+## perc_alcohol         .           
+## perc_not_distracted  .           
+## perc_no_previous     .           
+## PPILlosses          -1.459567e+01
+## `Cost(IP &amp; L)`       .           
+## rate.male            .           
+## LCL95.male           .           
+## UCL95.male           .           
+## rate.female          .           
+## LCL95.female         .           
+## UCL95.female         .           
+## rate.male_c          .           
+## num_drivers_c        .           
+## outcomelosses       -1.119885e-13
+## predictor            .           
+## prob                 .           
+## prediction           .           
+## logit                .</code></pre>
+<pre class="r"><code>glimpse(lasso)</code></pre>
+<pre><code>## List of 13
+##  $ a0        : Named num 7.3
+##   ..- attr(*, &quot;names&quot;)= chr &quot;s0&quot;
+##  $ beta      :Formal class &#39;dgCMatrix&#39; [package &quot;Matrix&quot;] with 6 slots
+##   .. ..@ i       : int [1:2] 53 63
+##   .. ..@ p       : int [1:2] 0 2
+##   .. ..@ Dim     : int [1:2] 68 1
+##   .. ..@ Dimnames:List of 2
+##   .. ..@ x       : num [1:2] -1.46e+01 -1.12e-13
+##   .. ..@ factors : list()
+##  $ df        : int 2
+##  $ dim       : int [1:2] 68 1
+##  $ lambda    : num 0.000677
+##  $ dev.ratio : num 0.999
+##  $ nulldev   : num 8229
+##  $ npasses   : int 25
+##  $ jerr      : int 0
+##  $ offset    : logi FALSE
+##  $ classnames: chr [1:2] &quot;0&quot; &quot;1&quot;
+##  $ call      : language glmnet(x = x, y = y, family = &quot;binomial&quot;, lambda = cv$lambda.1se)
+##  $ nobs      : int 5936
+##  - attr(*, &quot;class&quot;)= chr [1:2] &quot;lognet&quot; &quot;glmnet&quot;</code></pre>
+<pre class="r"><code>prob&lt;-predict(fit,type=&quot;response&quot;)
+pred&lt;-ifelse(prob&gt;.5,1,0)
+
+table(predictions=pred,truth=tdat1$PIL)</code></pre>
+<pre><code>##            truth
+## predictions    0    1
+##           1 2968 2968</code></pre>
+<pre class="r"><code># 10-fold CV
+
+set.seed(1234)
+k=10
+
+data1&lt;-tdat1[sample(nrow(tdat1)),]
+folds&lt;-cut(seq(1:nrow(tdat1)),breaks=k,labels=F)
+
+diags2&lt;-NULL
+for(i in 1:k){
+train2&lt;-data1[folds!=i,]
+test2&lt;-data1[folds==i,]
+truth2&lt;-test$PIL
+fit6&lt;- glm(PIL~PPIL+outcome,data=train,family=binomial(link=&quot;logit&quot;))
+probs2&lt;- predict(fit6, newdata=test, type=&quot;response&quot;)
+diags2&lt;-rbind(diags2,class_diag(probs2,truth2))}</code></pre>
+<pre><code>## Warning: glm.fit: algorithm did not converge</code></pre>
+<pre><code>## Warning in predict.lm(object, newdata, se.fit, scale = 1, type = if (type == :
+## prediction from a rank-deficient fit may be misleading</code></pre>
+<pre><code>## Warning: glm.fit: algorithm did not converge</code></pre>
+<pre><code>## Warning in predict.lm(object, newdata, se.fit, scale = 1, type = if (type == :
+## prediction from a rank-deficient fit may be misleading</code></pre>
+<pre><code>## Warning: glm.fit: algorithm did not converge</code></pre>
+<pre><code>## Warning in predict.lm(object, newdata, se.fit, scale = 1, type = if (type == :
+## prediction from a rank-deficient fit may be misleading</code></pre>
+<pre><code>## Warning: glm.fit: algorithm did not converge</code></pre>
+<pre><code>## Warning in predict.lm(object, newdata, se.fit, scale = 1, type = if (type == :
+## prediction from a rank-deficient fit may be misleading</code></pre>
+<pre><code>## Warning: glm.fit: algorithm did not converge</code></pre>
+<pre><code>## Warning in predict.lm(object, newdata, se.fit, scale = 1, type = if (type == :
+## prediction from a rank-deficient fit may be misleading</code></pre>
+<pre><code>## Warning: glm.fit: algorithm did not converge</code></pre>
+<pre><code>## Warning in predict.lm(object, newdata, se.fit, scale = 1, type = if (type == :
+## prediction from a rank-deficient fit may be misleading</code></pre>
+<pre><code>## Warning: glm.fit: algorithm did not converge</code></pre>
+<pre><code>## Warning in predict.lm(object, newdata, se.fit, scale = 1, type = if (type == :
+## prediction from a rank-deficient fit may be misleading</code></pre>
+<pre><code>## Warning: glm.fit: algorithm did not converge</code></pre>
+<pre><code>## Warning in predict.lm(object, newdata, se.fit, scale = 1, type = if (type == :
+## prediction from a rank-deficient fit may be misleading</code></pre>
+<pre><code>## Warning: glm.fit: algorithm did not converge</code></pre>
+<pre><code>## Warning in predict.lm(object, newdata, se.fit, scale = 1, type = if (type == :
+## prediction from a rank-deficient fit may be misleading</code></pre>
+<pre><code>## Warning: glm.fit: algorithm did not converge</code></pre>
+<pre><code>## Warning in predict.lm(object, newdata, se.fit, scale = 1, type = if (type == :
+## prediction from a rank-deficient fit may be misleading</code></pre>
+<pre class="r"><code>apply(diags2,2,mean)</code></pre>
+<pre><code>##  acc sens spec  ppv  auc 
+##    1    1    1    1    1</code></pre>
+<div id="after-running-the-lasso-test-ppillosses-and-outcomelosses-were-retained-because-they-were-non-zero-values.-the-lambda.1se-number-was-0.000677.-when-conducting-the-10-fold-cv-the-acc-sens-spec-ppv-and-auc-had-a-value-of-1.-when-compared-to-those-values-in-question-5-the-values-obtained-in-this-10-fold-cv-were-identical-to-the-other-values." class="section level2">
+<h2># After running the LASSO test, PPILlosses and outcomelosses were retained because they were non-zero values. The lambda.1se: number was 0.000677. When conducting the 10-fold CV, the ACC, Sens, spec, ppv, and auc had a value of 1. When compared to those values in question 5, the values obtained in this 10-fold CV were identical to the other values.</h2>
+<pre><code>## R version 3.6.1 (2019-07-05)
+## Platform: x86_64-apple-darwin15.6.0 (64-bit)
+## Running under: macOS Catalina 10.15.1
+## 
+## Matrix products: default
+## BLAS:   /Library/Frameworks/R.framework/Versions/3.6/Resources/lib/libRblas.0.dylib
+## LAPACK: /Library/Frameworks/R.framework/Versions/3.6/Resources/lib/libRlapack.dylib
+## 
+## locale:
+## [1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
+## 
+## attached base packages:
+## [1] stats     graphics  grDevices utils     datasets  methods   base     
+## 
+## other attached packages:
+##  [1] glmnet_3.0-1          Matrix_1.2-18         plotROC_2.2.1        
+##  [4] gvlma_1.0.0.3         sandwich_2.5-1        lmtest_0.9-37        
+##  [7] zoo_1.8-6             vegan_2.5-6           permute_0.9-5        
+## [10] devtools_2.2.1        usethis_1.5.1         forcats_0.4.0        
+## [13] stringr_1.4.0         dplyr_0.8.3           purrr_0.3.3          
+## [16] readr_1.3.1           tidyr_1.0.0           tibble_2.1.3         
+## [19] ggplot2_3.2.1         tidyverse_1.3.0       knitr_1.26           
+## [22] fivethirtyeight_0.5.0 latticeExtra_0.6-28   RColorBrewer_1.1-2   
+## [25] lattice_0.20-38      
+## 
+## loaded via a namespace (and not attached):
+##  [1] nlme_3.1-142      fs_1.3.1          lubridate_1.7.4   httr_1.4.1       
+##  [5] rprojroot_1.3-2   tools_3.6.1       backports_1.1.5   utf8_1.1.4       
+##  [9] R6_2.4.1          DBI_1.0.0         lazyeval_0.2.2    mgcv_1.8-31      
+## [13] colorspace_1.4-1  withr_2.1.2       tidyselect_0.2.5  prettyunits_1.0.2
+## [17] processx_3.4.1    compiler_3.6.1    cli_1.1.0         rvest_0.3.5      
+## [21] xml2_1.2.2        desc_1.2.0        labeling_0.3      bookdown_0.16    
+## [25] scales_1.1.0      callr_3.3.2       digest_0.6.23     rmarkdown_1.18   
+## [29] pkgconfig_2.0.3   htmltools_0.4.0   sessioninfo_1.1.1 dbplyr_1.4.2     
+## [33] rlang_0.4.2       readxl_1.3.1      rstudioapi_0.10   farver_2.0.1     
+## [37] shape_1.4.4       generics_0.0.2    jsonlite_1.6      magrittr_1.5     
+## [41] fansi_0.4.0       Rcpp_1.0.3        munsell_0.5.0     lifecycle_0.1.0  
+## [45] stringi_1.4.3     yaml_2.2.0        MASS_7.3-51.4     plyr_1.8.4       
+## [49] pkgbuild_1.0.6    grid_3.6.1        parallel_3.6.1    crayon_1.3.4     
+## [53] haven_2.2.0       splines_3.6.1     hms_0.5.2         zeallot_0.1.0    
+## [57] ps_1.3.0          pillar_1.4.2      codetools_0.2-16  pkgload_1.0.2    
+## [61] reprex_0.3.0      glue_1.3.1        evaluate_0.14     blogdown_0.17    
+## [65] remotes_2.1.0     modelr_0.1.5      foreach_1.4.7     vctrs_0.2.0      
+## [69] testthat_2.3.1    cellranger_1.1.0  gtable_0.3.0      assertthat_0.2.1 
+## [73] xfun_0.11         broom_0.5.2       iterators_1.0.12  memoise_1.1.0    
+## [77] cluster_2.1.0     ellipsis_0.3.0</code></pre>
+<pre><code>## [1] &quot;2019-12-14 05:27:30 CST&quot;</code></pre>
+<pre><code>##                                                                                            sysname 
+##                                                                                           &quot;Darwin&quot; 
+##                                                                                            release 
+##                                                                                           &quot;19.0.0&quot; 
+##                                                                                            version 
+## &quot;Darwin Kernel Version 19.0.0: Thu Oct 17 16:17:15 PDT 2019; root:xnu-6153.41.3~29/RELEASE_X86_64&quot; 
+##                                                                                           nodename 
+##                                                                            &quot;Tus-MacBook-Pro.local&quot; 
+##                                                                                            machine 
+##                                                                                           &quot;x86_64&quot; 
+##                                                                                              login 
+##                                                                                             &quot;root&quot; 
+##                                                                                               user 
+##                                                                                     &quot;tuhoang-mac1&quot; 
+##                                                                                     effective_user 
+##                                                                                     &quot;tuhoang-mac1&quot;</code></pre>
+</div>
+</div>

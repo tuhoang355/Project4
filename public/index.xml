@@ -1,0 +1,1367 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+        <title>Final SDS348 Project-My Website on Final SDS348 Project-My Website</title>
+        <link>/</link>
+        <description>Recent content in Final SDS348 Project-My Website on Final SDS348 Project-My Website</description>
+        <generator>Hugo -- gohugo.io</generator>
+        
+            <language>en</language>
+        
+        
+        
+            <copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright>
+        
+        
+            <lastBuildDate>Sat, 14 Dec 2019 00:00:00 +0000</lastBuildDate>
+        
+        <atom:link href="/" rel="self" type="application/rss+xml" />
+        
+            <item>
+                <title>Blogs</title>
+                <link>/blog/</link>
+                <pubDate>Sat, 14 Dec 2019 00:00:00 +0000</pubDate>
+                
+                <guid>/blog/</guid>
+                <description></description>
+            </item>
+        
+            <item>
+                <title></title>
+                <link>/project1/</link>
+                <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+                
+                <guid>/project1/</guid>
+                <description>
+
+
+&lt;p&gt;#Title: SDS 348 Project: 1 Exploratory Data Analysis
+#Author: Tu Hoang (tah2957)
+#Date: 10/20/2019
+—&lt;/p&gt;
+&lt;p&gt;Introduction
+The two dataset that I have decided to use for this Explorartory Data Anaylsis is a dataset named bad_drivers and another data set named USCancerRates. At first glance, these two dataset don’t have anything in common since one dealt with Cancer rates and the other dealt with factors contributing to inattentive drivers. I’ve decided to use this two dataset because I wanted to see if there was a plausible correction between inattentive drivers and cancer rates. Although, I know that there will not be a potential association data wise, these two dataset does show two of the top causes of death in america.
+The USCancerRates dataset contain 3041 observations of 8 variables. Those variables are rate.male, LCL95.male, UCL.95.male,rate.female, LCL.95 female, UCL.95 female, UCL.95 female, state, and county. The data was obtained by the National Cancer Institute and made public through The National Vital Statistics System. I am instesting in this dataset because I love doing research on cancer. The second dataset involves bad drivers. It contains 51 rows of observation involving 8 variables. The variables are state, num_drivers, perc_speeding,perc_alcohol,perc_not_distracted, perc_no_pervious,insurance_premiums, and losses. The data came from the story “Dear Mona, which state has the worst drivers?”. I’m interested in this dataset because I see bad drivers everyday.
+—&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(tidyverse)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## ── Attaching packages ─────────────────────────── tidyverse 1.3.0 ──&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## ✔ ggplot2 3.2.1     ✔ purrr   0.3.3
+## ✔ tibble  2.1.3     ✔ dplyr   0.8.3
+## ✔ tidyr   1.0.0     ✔ stringr 1.4.0
+## ✔ readr   1.3.1     ✔ forcats 0.4.0&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## ── Conflicts ────────────────────────────── tidyverse_conflicts() ──
+## ✖ dplyr::filter()  masks stats::filter()
+## ✖ dplyr::lag()     masks stats::lag()
+## ✖ ggplot2::layer() masks latticeExtra::layer()&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(tidyr)
+library(dplyr)
+library(devtools)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Loading required package: usethis&lt;/code&gt;&lt;/pre&gt;
+&lt;div id=&#34;tidying-rearranging-widelong&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Tidying: Rearranging Wide/Long&lt;/h1&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;bad_drivers2&amp;lt;-bad_drivers%&amp;gt;%pivot_longer(cols = c(&amp;quot;insurance_premiums&amp;quot;,&amp;quot;losses&amp;quot;), 
+names_to = &amp;quot;Policy Premiums/Insurance Losses&amp;quot;,
+values_to=&amp;quot;Cost(IP &amp;amp; L)&amp;quot;)
+glimpse(bad_drivers2)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Observations: 102
+## Variables: 8
+## $ state                              &amp;lt;chr&amp;gt; &amp;quot;Alabama&amp;quot;, &amp;quot;Alabama&amp;quot;, &amp;quot;Alaska&amp;quot;, &amp;quot;A…
+## $ num_drivers                        &amp;lt;dbl&amp;gt; 18.8, 18.8, 18.1, 18.1, 18.6, 18.6…
+## $ perc_speeding                      &amp;lt;int&amp;gt; 39, 39, 41, 41, 35, 35, 18, 18, 35…
+## $ perc_alcohol                       &amp;lt;int&amp;gt; 30, 30, 25, 25, 28, 28, 26, 26, 28…
+## $ perc_not_distracted                &amp;lt;int&amp;gt; 96, 96, 90, 90, 84, 84, 94, 94, 91…
+## $ perc_no_previous                   &amp;lt;int&amp;gt; 80, 80, 94, 94, 96, 96, 95, 95, 89…
+## $ `Policy Premiums/Insurance Losses` &amp;lt;chr&amp;gt; &amp;quot;insurance_premiums&amp;quot;, &amp;quot;losses&amp;quot;, &amp;quot;i…
+## $ `Cost(IP &amp;amp; L)`                     &amp;lt;dbl&amp;gt; 784.55, 145.08, 1053.48, 133.93, 8…&lt;/code&gt;&lt;/pre&gt;
+&lt;div id=&#34;from-the-bad_drivers-dataset-i-decided-to-tidy-the-two-column-named-insurance_premiums-and-losses-into-one.-the-new-column-was-named-policy-premiumsinsurance-losses-while-the-values-of-the-two-separate-column-was-joined-under-a-new-column-named-costip-l.-i-did-using-pivot_longer-because-it-made-the-dataset-shorter-and-easier-to-read.&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;From the bad_drivers dataset, I decided to tidy the two column named insurance_premiums, and losses into one. The new column was named Policy Premiums/Insurance Losses while the values of the two separate column was joined under a new column named Cost(IP &amp;amp; L). I did using pivot_longer because it made the dataset shorter and easier to read.&lt;/h2&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div id=&#34;joiningmerging&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Joining/Merging&lt;/h1&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;EDAdata2&amp;lt;-full_join(bad_drivers2,USCancerRates,by=&amp;quot;state&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Warning: Column `state` joining character vector and factor, coercing into
+## character vector&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;glimpse(EDAdata2)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Observations: 6,086
+## Variables: 15
+## $ state                              &amp;lt;chr&amp;gt; &amp;quot;Alabama&amp;quot;, &amp;quot;Alabama&amp;quot;, &amp;quot;Alabama&amp;quot;, &amp;quot;…
+## $ num_drivers                        &amp;lt;dbl&amp;gt; 18.8, 18.8, 18.8, 18.8, 18.8, 18.8…
+## $ perc_speeding                      &amp;lt;int&amp;gt; 39, 39, 39, 39, 39, 39, 39, 39, 39…
+## $ perc_alcohol                       &amp;lt;int&amp;gt; 30, 30, 30, 30, 30, 30, 30, 30, 30…
+## $ perc_not_distracted                &amp;lt;int&amp;gt; 96, 96, 96, 96, 96, 96, 96, 96, 96…
+## $ perc_no_previous                   &amp;lt;int&amp;gt; 80, 80, 80, 80, 80, 80, 80, 80, 80…
+## $ `Policy Premiums/Insurance Losses` &amp;lt;chr&amp;gt; &amp;quot;insurance_premiums&amp;quot;, &amp;quot;insurance_p…
+## $ `Cost(IP &amp;amp; L)`                     &amp;lt;dbl&amp;gt; 784.55, 784.55, 784.55, 784.55, 78…
+## $ rate.male                          &amp;lt;dbl&amp;gt; 363.7, 345.7, 340.7, 335.9, 330.1,…
+## $ LCL95.male                         &amp;lt;dbl&amp;gt; 311.1, 274.2, 304.5, 288.9, 293.4,…
+## $ UCL95.male                         &amp;lt;dbl&amp;gt; 423.2, 431.4, 380.9, 389.1, 370.6,…
+## $ rate.female                        &amp;lt;dbl&amp;gt; 151.0, 140.5, 182.3, 185.3, 172.0,…
+## $ LCL95.female                       &amp;lt;dbl&amp;gt; 123.6, 102.8, 161.3, 157.2, 151.4,…
+## $ UCL95.female                       &amp;lt;dbl&amp;gt; 183.6, 189.7, 205.5, 217.5, 195.0,…
+## $ county                             &amp;lt;I&amp;lt;chr&amp;gt;&amp;gt; Pickens County, Bullock County,…&lt;/code&gt;&lt;/pre&gt;
+&lt;div id=&#34;ive-decided-to-join-using-the-variable-state-because-that-was-the-variable-present-in-both-dataset.-using-the-variable-state-allowed-me-to-keep-the-rest-of-the-data-present-without-having-one-removed.-by-joining-the-variable-state-i-avoided-having-any-cases-drop.&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;I’ve decided to join using the variable state because that was the variable present in both dataset. Using the variable “state”&amp;quot; allowed me to keep the rest of the data present without having one removed. By joining the variable state, I avoided having any cases drop.&lt;/h2&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div id=&#34;wrangling&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Wrangling&lt;/h1&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;EDAdata2%&amp;gt;%filter(state==&amp;quot;Texas&amp;quot;)%&amp;gt;%glimpse()&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Observations: 470
+## Variables: 15
+## $ state                              &amp;lt;chr&amp;gt; &amp;quot;Texas&amp;quot;, &amp;quot;Texas&amp;quot;, &amp;quot;Texas&amp;quot;, &amp;quot;Texas&amp;quot;…
+## $ num_drivers                        &amp;lt;dbl&amp;gt; 19.4, 19.4, 19.4, 19.4, 19.4, 19.4…
+## $ perc_speeding                      &amp;lt;int&amp;gt; 40, 40, 40, 40, 40, 40, 40, 40, 40…
+## $ perc_alcohol                       &amp;lt;int&amp;gt; 38, 38, 38, 38, 38, 38, 38, 38, 38…
+## $ perc_not_distracted                &amp;lt;int&amp;gt; 91, 91, 91, 91, 91, 91, 91, 91, 91…
+## $ perc_no_previous                   &amp;lt;int&amp;gt; 87, 87, 87, 87, 87, 87, 87, 87, 87…
+## $ `Policy Premiums/Insurance Losses` &amp;lt;chr&amp;gt; &amp;quot;insurance_premiums&amp;quot;, &amp;quot;insurance_p…
+## $ `Cost(IP &amp;amp; L)`                     &amp;lt;dbl&amp;gt; 1004.75, 1004.75, 1004.75, 1004.75…
+## $ rate.male                          &amp;lt;dbl&amp;gt; 446.0, 402.3, 367.3, 353.6, 330.5,…
+## $ LCL95.male                         &amp;lt;dbl&amp;gt; 408.6, 288.8, 248.1, 320.7, 271.2,…
+## $ UCL95.male                         &amp;lt;dbl&amp;gt; 486.1, 555.5, 536.4, 389.7, 400.8,…
+## $ rate.female                        &amp;lt;dbl&amp;gt; 197.9, 137.6, 155.2, 209.0, 187.7,…
+## $ LCL95.female                       &amp;lt;dbl&amp;gt; 174.8, 87.0, 90.3, 187.8, 149.4, 1…
+## $ UCL95.female                       &amp;lt;dbl&amp;gt; 223.6, 223.5, 262.9, 232.1, 235.2,…
+## $ county                             &amp;lt;I&amp;lt;chr&amp;gt;&amp;gt; Anderson County, Hall County, C…&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;EDAdata2%&amp;gt;%slice(1:3)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## # A tibble: 3 x 15
+##   state num_drivers perc_speeding perc_alcohol perc_not_distra… perc_no_previous
+##   &amp;lt;chr&amp;gt;       &amp;lt;dbl&amp;gt;         &amp;lt;int&amp;gt;        &amp;lt;int&amp;gt;            &amp;lt;int&amp;gt;            &amp;lt;int&amp;gt;
+## 1 Alab…        18.8            39           30               96               80
+## 2 Alab…        18.8            39           30               96               80
+## 3 Alab…        18.8            39           30               96               80
+## # … with 9 more variables: `Policy Premiums/Insurance Losses` &amp;lt;chr&amp;gt;, `Cost(IP &amp;amp;
+## #   L)` &amp;lt;dbl&amp;gt;, rate.male &amp;lt;dbl&amp;gt;, LCL95.male &amp;lt;dbl&amp;gt;, UCL95.male &amp;lt;dbl&amp;gt;,
+## #   rate.female &amp;lt;dbl&amp;gt;, LCL95.female &amp;lt;dbl&amp;gt;, UCL95.female &amp;lt;dbl&amp;gt;, county &amp;lt;I&amp;lt;chr&amp;gt;&amp;gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;EDAdata2%&amp;gt;%arrange(desc(state),desc(rate.male),desc(rate.female))%&amp;gt;%head(10)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## # A tibble: 10 x 15
+##    state num_drivers perc_speeding perc_alcohol perc_not_distra…
+##    &amp;lt;chr&amp;gt;       &amp;lt;dbl&amp;gt;         &amp;lt;int&amp;gt;        &amp;lt;int&amp;gt;            &amp;lt;int&amp;gt;
+##  1 Wyom…        17.4            42           32               81
+##  2 Wyom…        17.4            42           32               81
+##  3 Wyom…        17.4            42           32               81
+##  4 Wyom…        17.4            42           32               81
+##  5 Wyom…        17.4            42           32               81
+##  6 Wyom…        17.4            42           32               81
+##  7 Wyom…        17.4            42           32               81
+##  8 Wyom…        17.4            42           32               81
+##  9 Wyom…        17.4            42           32               81
+## 10 Wyom…        17.4            42           32               81
+## # … with 10 more variables: perc_no_previous &amp;lt;int&amp;gt;, `Policy Premiums/Insurance
+## #   Losses` &amp;lt;chr&amp;gt;, `Cost(IP &amp;amp; L)` &amp;lt;dbl&amp;gt;, rate.male &amp;lt;dbl&amp;gt;, LCL95.male &amp;lt;dbl&amp;gt;,
+## #   UCL95.male &amp;lt;dbl&amp;gt;, rate.female &amp;lt;dbl&amp;gt;, LCL95.female &amp;lt;dbl&amp;gt;,
+## #   UCL95.female &amp;lt;dbl&amp;gt;, county &amp;lt;I&amp;lt;chr&amp;gt;&amp;gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;EDAdata2%&amp;gt;%select(county, rate.male, rate.female, `Policy Premiums/Insurance Losses`)%&amp;gt;%head(10)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## # A tibble: 10 x 4
+##    county         rate.male rate.female `Policy Premiums/Insurance Losses`
+##    &amp;lt;I&amp;lt;chr&amp;gt;&amp;gt;           &amp;lt;dbl&amp;gt;       &amp;lt;dbl&amp;gt; &amp;lt;chr&amp;gt;                             
+##  1 Pickens County      364.        151  insurance_premiums                
+##  2 Bullock County      346.        140. insurance_premiums                
+##  3 Russell County      341.        182. insurance_premiums                
+##  4 Barbour County      336.        185. insurance_premiums                
+##  5 Dallas County       330.        172  insurance_premiums                
+##  6 Greene County       328.        124. insurance_premiums                
+##  7 Perry County        328.        174. insurance_premiums                
+##  8 Walker County       327.        158. insurance_premiums                
+##  9 Macon County        324.        184. insurance_premiums                
+## 10 Lamar County        321.        161. insurance_premiums&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;EDAdata2%&amp;gt;%mutate(TotalRateMF = rate.male+rate.female)%&amp;gt;%head(5)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## # A tibble: 5 x 16
+##   state num_drivers perc_speeding perc_alcohol perc_not_distra… perc_no_previous
+##   &amp;lt;chr&amp;gt;       &amp;lt;dbl&amp;gt;         &amp;lt;int&amp;gt;        &amp;lt;int&amp;gt;            &amp;lt;int&amp;gt;            &amp;lt;int&amp;gt;
+## 1 Alab…        18.8            39           30               96               80
+## 2 Alab…        18.8            39           30               96               80
+## 3 Alab…        18.8            39           30               96               80
+## 4 Alab…        18.8            39           30               96               80
+## 5 Alab…        18.8            39           30               96               80
+## # … with 10 more variables: `Policy Premiums/Insurance Losses` &amp;lt;chr&amp;gt;, `Cost(IP
+## #   &amp;amp; L)` &amp;lt;dbl&amp;gt;, rate.male &amp;lt;dbl&amp;gt;, LCL95.male &amp;lt;dbl&amp;gt;, UCL95.male &amp;lt;dbl&amp;gt;,
+## #   rate.female &amp;lt;dbl&amp;gt;, LCL95.female &amp;lt;dbl&amp;gt;, UCL95.female &amp;lt;dbl&amp;gt;, county &amp;lt;I&amp;lt;chr&amp;gt;&amp;gt;,
+## #   TotalRateMF &amp;lt;dbl&amp;gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;EDAdata2%&amp;gt;%mutate(rate.male = case_when(rate.male&amp;gt;300 ~ &amp;quot;high&amp;quot;,rate.male&amp;lt;250 &amp;amp; rate.male&amp;gt;150 ~ &amp;quot;med&amp;quot;,
+rate.male&amp;lt;150 ~ &amp;quot;low&amp;quot;))%&amp;gt;%head(20)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## # A tibble: 20 x 15
+##    state num_drivers perc_speeding perc_alcohol perc_not_distra…
+##    &amp;lt;chr&amp;gt;       &amp;lt;dbl&amp;gt;         &amp;lt;int&amp;gt;        &amp;lt;int&amp;gt;            &amp;lt;int&amp;gt;
+##  1 Alab…        18.8            39           30               96
+##  2 Alab…        18.8            39           30               96
+##  3 Alab…        18.8            39           30               96
+##  4 Alab…        18.8            39           30               96
+##  5 Alab…        18.8            39           30               96
+##  6 Alab…        18.8            39           30               96
+##  7 Alab…        18.8            39           30               96
+##  8 Alab…        18.8            39           30               96
+##  9 Alab…        18.8            39           30               96
+## 10 Alab…        18.8            39           30               96
+## 11 Alab…        18.8            39           30               96
+## 12 Alab…        18.8            39           30               96
+## 13 Alab…        18.8            39           30               96
+## 14 Alab…        18.8            39           30               96
+## 15 Alab…        18.8            39           30               96
+## 16 Alab…        18.8            39           30               96
+## 17 Alab…        18.8            39           30               96
+## 18 Alab…        18.8            39           30               96
+## 19 Alab…        18.8            39           30               96
+## 20 Alab…        18.8            39           30               96
+## # … with 10 more variables: perc_no_previous &amp;lt;int&amp;gt;, `Policy Premiums/Insurance
+## #   Losses` &amp;lt;chr&amp;gt;, `Cost(IP &amp;amp; L)` &amp;lt;dbl&amp;gt;, rate.male &amp;lt;chr&amp;gt;, LCL95.male &amp;lt;dbl&amp;gt;,
+## #   UCL95.male &amp;lt;dbl&amp;gt;, rate.female &amp;lt;dbl&amp;gt;, LCL95.female &amp;lt;dbl&amp;gt;,
+## #   UCL95.female &amp;lt;dbl&amp;gt;, county &amp;lt;I&amp;lt;chr&amp;gt;&amp;gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;EDAdata2%&amp;gt;%group_by(county)%&amp;gt;%summarize(mean_rate.female=mean(rate.female,na.rm=T),
+sd_rate.female=sd(rate.female, na.rm=T))%&amp;gt;%head(10)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## # A tibble: 10 x 3
+##    county           mean_rate.female sd_rate.female
+##    &amp;lt;I&amp;lt;chr&amp;gt;&amp;gt;                    &amp;lt;dbl&amp;gt;          &amp;lt;dbl&amp;gt;
+##  1 Abbeville County             162.            0  
+##  2 Acadia Parish                216.            0  
+##  3 Accomack County              198.            0  
+##  4 Ada County                   158.            0  
+##  5 Adair County                 167.           29.4
+##  6 Adams County                 163.           27.1
+##  7 Addison County               157.            0  
+##  8 Aiken County                 168.            0  
+##  9 Aitkin County                165.            0  
+## 10 Alachua County               166.            0&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;EDAdata2%&amp;gt;%mutate(rate.male1 = case_when(rate.male&amp;gt;300 ~ &amp;quot;high&amp;quot;,
+rate.male&amp;lt;250 &amp;amp; rate.male&amp;gt;150 ~ &amp;quot;med&amp;quot;,rate.male&amp;lt;150 ~&amp;quot;low&amp;quot;))%&amp;gt;%group_by(rate.male1)%&amp;gt;%summarize()&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## # A tibble: 4 x 1
+##   rate.male1
+##   &amp;lt;chr&amp;gt;     
+## 1 high      
+## 2 low       
+## 3 med       
+## 4 &amp;lt;NA&amp;gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;EDAdata2%&amp;gt;%group_by(state)%&amp;gt;%summarize(mean_rate.female=mean(rate.female,na.rm=T),
+sd_rate.female=sd(rate.female, na.rm=T))%&amp;gt;%head(10)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## # A tibble: 10 x 3
+##    state                mean_rate.female sd_rate.female
+##    &amp;lt;chr&amp;gt;                           &amp;lt;dbl&amp;gt;          &amp;lt;dbl&amp;gt;
+##  1 Alabama                          162.          16.0 
+##  2 Alaska                           183.          37.2 
+##  3 Arizona                          144.          20.2 
+##  4 Arkansas                         170.          19.4 
+##  5 California                       161.          16.3 
+##  6 Colorado                         151.          23.1 
+##  7 Connecticut                      162            9.83
+##  8 Delaware                         178.           5.84
+##  9 District of Columbia             NaN           NA   
+## 10 Florida                          162.          18.9&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;EDAdata2%&amp;gt;%group_by(`Cost(IP &amp;amp; L)`)%&amp;gt;%summarize(median_rate.male=median(rate.male,na.rm = T),
+max_rate.male=max(rate.male,na.rm = T))%&amp;gt;%head(10)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Warning in max(rate.male, na.rm = T): no non-missing arguments to max; returning
+## -Inf
+
+## Warning in max(rate.male, na.rm = T): no non-missing arguments to max; returning
+## -Inf
+
+## Warning in max(rate.male, na.rm = T): no non-missing arguments to max; returning
+## -Inf
+
+## Warning in max(rate.male, na.rm = T): no non-missing arguments to max; returning
+## -Inf&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## # A tibble: 10 x 3
+##    `Cost(IP &amp;amp; L)` median_rate.male max_rate.male
+##             &amp;lt;dbl&amp;gt;            &amp;lt;dbl&amp;gt;         &amp;lt;dbl&amp;gt;
+##  1           82.8             212           274.
+##  2           85.2             236.          330.
+##  3           96.6             260.          309.
+##  4           96.9             235.          350.
+##  5          105.              236.          281.
+##  6          107.              236           451.
+##  7          109.              260.          356.
+##  8          109.              184.          306 
+##  9          110.              234.          271.
+## 10          110.              222.          320.&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;EDAdata2%&amp;gt;%summarize(sd_perc_alcohol= sd(perc_alcohol,na.rm = T))&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## # A tibble: 1 x 1
+##   sd_perc_alcohol
+##             &amp;lt;dbl&amp;gt;
+## 1            4.89&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;EDAdata2%&amp;gt;%summarize(sd_perc_speeding= sd(perc_speeding,na.rm = T))&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## # A tibble: 1 x 1
+##   sd_perc_speeding
+##              &amp;lt;dbl&amp;gt;
+## 1             9.57&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;EDAdata2%&amp;gt;%mutate(rate.male1 = case_when(rate.male&amp;gt;300 ~ &amp;quot;high&amp;quot;,rate.male&amp;lt;250 &amp;amp; rate.male&amp;gt;150 ~ &amp;quot;med&amp;quot;,rate.male&amp;lt;150 ~ &amp;quot;low&amp;quot;))%&amp;gt;%group_by(rate.male1,`Policy Premiums/Insurance Losses`)%&amp;gt;%summarize(mean_rate.female=mean(rate.female,na.rm=T), sd_rate.female=sd(rate.female, na.rm=T))&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## # A tibble: 8 x 4
+## # Groups:   rate.male1 [4]
+##   rate.male1 `Policy Premiums/Insurance Losses` mean_rate.female sd_rate.female
+##   &amp;lt;chr&amp;gt;      &amp;lt;chr&amp;gt;                                         &amp;lt;dbl&amp;gt;          &amp;lt;dbl&amp;gt;
+## 1 high       insurance_premiums                             179.           26.1
+## 2 high       losses                                         179.           26.1
+## 3 low        insurance_premiums                             137.           31.3
+## 4 low        losses                                         137.           31.3
+## 5 med        insurance_premiums                             156.           21.2
+## 6 med        losses                                         156.           21.2
+## 7 &amp;lt;NA&amp;gt;       insurance_premiums                             170.           20.4
+## 8 &amp;lt;NA&amp;gt;       losses                                         170.           20.4&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;EDAdata2%&amp;gt;%group_by(`Policy Premiums/Insurance Losses`)%&amp;gt;%summarize(sd_perc_alcohol= sd(perc_alcohol,na.rm = T))&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## # A tibble: 2 x 2
+##   `Policy Premiums/Insurance Losses` sd_perc_alcohol
+##   &amp;lt;chr&amp;gt;                                        &amp;lt;dbl&amp;gt;
+## 1 insurance_premiums                            4.89
+## 2 losses                                        4.89&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;EDAdata2%&amp;gt;%summarize(median_num_drivers=median(num_drivers,na.rm = T))&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## # A tibble: 1 x 1
+##   median_num_drivers
+##                &amp;lt;dbl&amp;gt;
+## 1               16.1&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;EDAdata2%&amp;gt;%group_by(state)%&amp;gt;%summarize(mean_UCL95.female=mean(UCL95.female,na.rm = T))&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## # A tibble: 51 x 2
+##    state                mean_UCL95.female
+##    &amp;lt;chr&amp;gt;                            &amp;lt;dbl&amp;gt;
+##  1 Alabama                           190.
+##  2 Alaska                            269.
+##  3 Arizona                           164.
+##  4 Arkansas                          206.
+##  5 California                        180.
+##  6 Colorado                          199.
+##  7 Connecticut                       172.
+##  8 Delaware                          188.
+##  9 District of Columbia              NaN 
+## 10 Florida                           186.
+## # … with 41 more rows&lt;/code&gt;&lt;/pre&gt;
+&lt;div id=&#34;the-first-code-was-filter.-the-dataset-was-filter-by-state-more-precisely-texas.-it-resulted-in-a-summary-statistics-for-all-of-the-observations-from-the-state-of-texas.-the-second-line-of-code-used-slice-and-it-resulted-in-observations-1-3-of-the-dataset-edadata2.-arrange-was-used-next-and-it-gave-a-summary-statistics-where-state-rate.maleand-rate.female-was-arranged-in-descending-value.-next-the-function-select-was-used-and-the-variable-county-rate.male-rate.female-and-policy-premiumsinsurance-losses-were-selected-for.-mutate-was-used-next-to-form-a-new-column-named-totalratemf-which-was-the-sum-of-rate.male-and-rate.female.the-rest-of-the-codes-were-a-combination-of-the-function-summarize-and-group-by.-the-group-by-function-set-the-dataset-corresponding-to-the-desired-variable-while-the-summarize-function-gave-a-summary-of-what-data-was-desired.-for-example-the-mean-median-standard-deviation-and-much-more.&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;The first code was filter. The dataset was filter by state; more precisely Texas. It resulted in a summary statistics for all of the observations from the state of Texas. The second line of code used slice and it resulted in observations 1-3 of the dataset “EDAdata2”. Arrange was used next and it gave a summary statistics where state, rate.male,and rate.female was arranged in descending value. Next, the function select was used and the variable county, rate.male, rate.female, and “Policy Premiums/Insurance Losses” were selected for. Mutate was used next to form a new column named TotalRateMF, which was the sum of rate.male and rate.female.The rest of the codes were a combination of the function summarize and group by. The group by function set the dataset corresponding to the desired variable, while the summarize function gave a summary of what data was desired. For example, the mean, median, standard deviation, and much more.&lt;/h2&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div id=&#34;dimensionality-reduction&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Dimensionality Reduction&lt;/h1&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;EDAdata2%&amp;gt;%select_if(is.numeric)%&amp;gt;%cov&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##                     num_drivers perc_speeding perc_alcohol perc_not_distracted
+## num_drivers           12.805546      1.816437     3.728300            1.720599
+## perc_speeding          1.816437     91.622079    20.921901           25.437539
+## perc_alcohol           3.728300     20.921901    23.888942            4.431325
+## perc_not_distracted    1.720599     25.437539     4.431325          271.304172
+## perc_no_previous      -2.072312     -4.765304    -1.919615          -23.554693
+## Cost(IP &amp;amp; L)          31.385468     84.801189    12.768092          -50.824065
+## rate.male                    NA            NA           NA                  NA
+## LCL95.male                   NA            NA           NA                  NA
+## UCL95.male                   NA            NA           NA                  NA
+## rate.female                  NA            NA           NA                  NA
+## LCL95.female                 NA            NA           NA                  NA
+## UCL95.female                 NA            NA           NA                  NA
+##                     perc_no_previous Cost(IP &amp;amp; L) rate.male LCL95.male
+## num_drivers                -2.072312     31.38547        NA         NA
+## perc_speeding              -4.765304     84.80119        NA         NA
+## perc_alcohol               -1.919615     12.76809        NA         NA
+## perc_not_distracted       -23.554693    -50.82407        NA         NA
+## perc_no_previous           39.991384     33.42144        NA         NA
+## Cost(IP &amp;amp; L)               33.421445 141454.21562        NA         NA
+## rate.male                         NA           NA        NA         NA
+## LCL95.male                        NA           NA        NA         NA
+## UCL95.male                        NA           NA        NA         NA
+## rate.female                       NA           NA        NA         NA
+## LCL95.female                      NA           NA        NA         NA
+## UCL95.female                      NA           NA        NA         NA
+##                     UCL95.male rate.female LCL95.female UCL95.female
+## num_drivers                 NA          NA           NA           NA
+## perc_speeding               NA          NA           NA           NA
+## perc_alcohol                NA          NA           NA           NA
+## perc_not_distracted         NA          NA           NA           NA
+## perc_no_previous            NA          NA           NA           NA
+## Cost(IP &amp;amp; L)                NA          NA           NA           NA
+## rate.male                   NA          NA           NA           NA
+## LCL95.male                  NA          NA           NA           NA
+## UCL95.male                  NA          NA           NA           NA
+## rate.female                 NA          NA           NA           NA
+## LCL95.female                NA          NA           NA           NA
+## UCL95.female                NA          NA           NA           NA&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;EDAdata2%&amp;gt;%select_if(is.numeric)%&amp;gt;%cov%&amp;gt;%round(2)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##                     num_drivers perc_speeding perc_alcohol perc_not_distracted
+## num_drivers               12.81          1.82         3.73                1.72
+## perc_speeding              1.82         91.62        20.92               25.44
+## perc_alcohol               3.73         20.92        23.89                4.43
+## perc_not_distracted        1.72         25.44         4.43              271.30
+## perc_no_previous          -2.07         -4.77        -1.92              -23.55
+## Cost(IP &amp;amp; L)              31.39         84.80        12.77              -50.82
+## rate.male                    NA            NA           NA                  NA
+## LCL95.male                   NA            NA           NA                  NA
+## UCL95.male                   NA            NA           NA                  NA
+## rate.female                  NA            NA           NA                  NA
+## LCL95.female                 NA            NA           NA                  NA
+## UCL95.female                 NA            NA           NA                  NA
+##                     perc_no_previous Cost(IP &amp;amp; L) rate.male LCL95.male
+## num_drivers                    -2.07        31.39        NA         NA
+## perc_speeding                  -4.77        84.80        NA         NA
+## perc_alcohol                   -1.92        12.77        NA         NA
+## perc_not_distracted           -23.55       -50.82        NA         NA
+## perc_no_previous               39.99        33.42        NA         NA
+## Cost(IP &amp;amp; L)                   33.42    141454.22        NA         NA
+## rate.male                         NA           NA        NA         NA
+## LCL95.male                        NA           NA        NA         NA
+## UCL95.male                        NA           NA        NA         NA
+## rate.female                       NA           NA        NA         NA
+## LCL95.female                      NA           NA        NA         NA
+## UCL95.female                      NA           NA        NA         NA
+##                     UCL95.male rate.female LCL95.female UCL95.female
+## num_drivers                 NA          NA           NA           NA
+## perc_speeding               NA          NA           NA           NA
+## perc_alcohol                NA          NA           NA           NA
+## perc_not_distracted         NA          NA           NA           NA
+## perc_no_previous            NA          NA           NA           NA
+## Cost(IP &amp;amp; L)                NA          NA           NA           NA
+## rate.male                   NA          NA           NA           NA
+## LCL95.male                  NA          NA           NA           NA
+## UCL95.male                  NA          NA           NA           NA
+## rate.female                 NA          NA           NA           NA
+## LCL95.female                NA          NA           NA           NA
+## UCL95.female                NA          NA           NA           NA&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;EDAdata2%&amp;gt;%select_if(is.numeric)%&amp;gt;%scale%&amp;gt;%cov%&amp;gt;%round(2)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##                     num_drivers perc_speeding perc_alcohol perc_not_distracted
+## num_drivers                1.00          0.05         0.21                0.03
+## perc_speeding              0.05          1.00         0.45                0.16
+## perc_alcohol               0.21          0.45         1.00                0.06
+## perc_not_distracted        0.03          0.16         0.06                1.00
+## perc_no_previous          -0.09         -0.08        -0.06               -0.23
+## Cost(IP &amp;amp; L)               0.02          0.02         0.01               -0.01
+## rate.male                    NA            NA           NA                  NA
+## LCL95.male                   NA            NA           NA                  NA
+## UCL95.male                   NA            NA           NA                  NA
+## rate.female                  NA            NA           NA                  NA
+## LCL95.female                 NA            NA           NA                  NA
+## UCL95.female                 NA            NA           NA                  NA
+##                     perc_no_previous Cost(IP &amp;amp; L) rate.male LCL95.male
+## num_drivers                    -0.09         0.02        NA         NA
+## perc_speeding                  -0.08         0.02        NA         NA
+## perc_alcohol                   -0.06         0.01        NA         NA
+## perc_not_distracted            -0.23        -0.01        NA         NA
+## perc_no_previous                1.00         0.01        NA         NA
+## Cost(IP &amp;amp; L)                    0.01         1.00        NA         NA
+## rate.male                         NA           NA        NA         NA
+## LCL95.male                        NA           NA        NA         NA
+## UCL95.male                        NA           NA        NA         NA
+## rate.female                       NA           NA        NA         NA
+## LCL95.female                      NA           NA        NA         NA
+## UCL95.female                      NA           NA        NA         NA
+##                     UCL95.male rate.female LCL95.female UCL95.female
+## num_drivers                 NA          NA           NA           NA
+## perc_speeding               NA          NA           NA           NA
+## perc_alcohol                NA          NA           NA           NA
+## perc_not_distracted         NA          NA           NA           NA
+## perc_no_previous            NA          NA           NA           NA
+## Cost(IP &amp;amp; L)                NA          NA           NA           NA
+## rate.male                   NA          NA           NA           NA
+## LCL95.male                  NA          NA           NA           NA
+## UCL95.male                  NA          NA           NA           NA
+## rate.female                 NA          NA           NA           NA
+## LCL95.female                NA          NA           NA           NA
+## UCL95.female                NA          NA           NA           NA&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;ggplot(EDAdata2,aes(x=rate.male,y=rate.female))+geom_point()+coord_fixed()&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Warning: Removed 150 rows containing missing values (geom_point).&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/Project1_files/figure-html/unnamed-chunk-5-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;EDAdata3&amp;lt;-EDAdata2%&amp;gt;%select(-county,-`Policy Premiums/Insurance Losses`,-state)%&amp;gt;%na.omit
+EDAdata_nums&amp;lt;-EDAdata3%&amp;gt;%select_if(is.numeric)%&amp;gt;%scale()
+EDAdata_pca&amp;lt;-princomp(EDAdata_nums)
+summary(EDAdata_pca,loadings=T)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Importance of components:
+##                           Comp.1    Comp.2    Comp.3    Comp.4     Comp.5
+## Standard deviation     1.8481281 1.2807524 1.2161804 1.1448144 1.06184455
+## Proportion of Variance 0.2846794 0.1367169 0.1232787 0.1092351 0.09397532
+## Cumulative Proportion  0.2846794 0.4213963 0.5446750 0.6539101 0.74788539
+##                            Comp.6     Comp.7     Comp.8     Comp.9     Comp.10
+## Standard deviation     0.99461698 0.89644753 0.83934815 0.70736469 0.143095772
+## Proportion of Variance 0.08245247 0.06697946 0.05871867 0.04170409 0.001706654
+## Cumulative Proportion  0.83033786 0.89731732 0.95603599 0.99774009 0.999446740
+##                             Comp.11      Comp.12
+## Standard deviation     0.0768732854 2.699074e-02
+## Proportion of Variance 0.0004925415 6.071856e-05
+## Cumulative Proportion  0.9999392814 1.000000e+00
+## 
+## Loadings:
+##                     Comp.1 Comp.2 Comp.3 Comp.4 Comp.5 Comp.6 Comp.7 Comp.8
+## num_drivers          0.141  0.194  0.470  0.135                0.527  0.617
+## perc_speeding               0.584         0.152 -0.251        -0.274 -0.158
+## perc_alcohol                0.539  0.250  0.131 -0.349 -0.126        -0.148
+## perc_not_distracted         0.340                0.590  0.142 -0.565  0.395
+## perc_no_previous           -0.323               -0.614        -0.472  0.525
+## Cost(IP &amp;amp; L)                                    -0.213  0.966              
+## rate.male            0.480 -0.104  0.119  0.329               -0.160       
+## LCL95.male           0.426        -0.190  0.484                            
+## UCL95.male           0.411 -0.145  0.447                      -0.224 -0.232
+## rate.female          0.427  0.173 -0.240 -0.405 -0.118                     
+## LCL95.female         0.340  0.202 -0.561        -0.128         0.132  0.211
+## UCL95.female         0.297         0.285 -0.644                      -0.129
+##                     Comp.9 Comp.10 Comp.11 Comp.12
+## num_drivers          0.186                        
+## perc_speeding        0.675                        
+## perc_alcohol        -0.684                        
+## perc_not_distracted -0.182                        
+## perc_no_previous                                  
+## Cost(IP &amp;amp; L)                                      
+## rate.male                   0.165  -0.334  -0.677 
+## LCL95.male                 -0.584           0.429 
+## UCL95.male                  0.371   0.488   0.347 
+## rate.female                 0.382  -0.521   0.352 
+## LCL95.female                        0.606  -0.265 
+## UCL95.female               -0.583          -0.206&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;eigen(cor(EDAdata_nums))&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## eigen() decomposition
+## $values
+##  [1] 3.4161530069 1.6406029680 1.4793439548 1.3108209460 1.1277038163
+##  [6] 0.9894296293 0.8037535729 0.7046240262 0.5004491091 0.0204798500
+## [11] 0.0059104977 0.0007286227
+## 
+## $vectors
+##              [,1]        [,2]        [,3]        [,4]        [,5]         [,6]
+##  [1,]  0.14091041  0.19425138 -0.47034079 -0.13544791 -0.05731790  0.081948189
+##  [2,] -0.07997573  0.58446658 -0.03319861 -0.15168208  0.25102412 -0.095004713
+##  [3,] -0.04067565  0.53923560 -0.24953582 -0.13111989  0.34854006 -0.125824732
+##  [4,] -0.04863287  0.34005988  0.01779695  0.06405884 -0.59022039  0.141821856
+##  [5,] -0.04845119 -0.32289281 -0.09842857  0.04173177  0.61361578 -0.077282590
+##  [6,]  0.02589183  0.03711376  0.04662327 -0.09941192  0.21268780  0.965515655
+##  [7,]  0.47969298 -0.10370974 -0.11851457 -0.32892341 -0.05559351 -0.037953152
+##  [8,]  0.42644402 -0.03063536  0.18950573 -0.48352053 -0.01544030 -0.065675520
+##  [9,]  0.41131299 -0.14503615 -0.44686134 -0.02700905 -0.08375464  0.007511587
+## [10,]  0.42668205  0.17341180  0.24009777  0.40547094  0.11757731 -0.005241802
+## [11,]  0.33971888  0.20182619  0.56074226  0.05939119  0.12764300 -0.044296261
+## [12,]  0.29682632  0.07125360 -0.28549715  0.64426701  0.04049435  0.048170984
+##              [,7]        [,8]         [,9]        [,10]        [,11]
+##  [1,]  0.52656823 -0.61731246 -0.185550273 -0.002714540 -0.007584924
+##  [2,] -0.27370815  0.15779315 -0.675238509  0.008793938 -0.002523097
+##  [3,]  0.02705672  0.14782841  0.683786116 -0.024845008  0.004947947
+##  [4,] -0.56541400 -0.39516606  0.182224398 -0.005797346  0.003367688
+##  [5,] -0.47182596 -0.52530528  0.029289517  0.004887338 -0.004157863
+##  [6,] -0.02283111  0.08627621  0.021737092  0.000409583  0.001235416
+##  [7,] -0.15976117  0.09746700  0.004869472 -0.165236503  0.333605738
+##  [8,] -0.06852066 -0.03478363  0.050816617  0.584148601  0.095094373
+##  [9,] -0.22363642  0.23216720 -0.038020817 -0.371444496 -0.488191233
+## [10,]  0.05878703 -0.08253483 -0.010441128 -0.382428556  0.521266995
+## [11,]  0.13177851 -0.21117249  0.046843109 -0.079450970 -0.605627602
+## [12,] -0.05648222  0.12888304 -0.034199044  0.583243174 -0.052067123
+##               [,12]
+##  [1,] -0.0007978718
+##  [2,]  0.0029193250
+##  [3,] -0.0027115628
+##  [4,] -0.0006468747
+##  [5,]  0.0012820537
+##  [6,]  0.0003204847
+##  [7,]  0.6772949819
+##  [8,] -0.4291747179
+##  [9,] -0.3473301036
+## [10,] -0.3515927352
+## [11,]  0.2653153952
+## [12,]  0.2059465495&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;ggplot()+geom_point(aes(EDAdata_pca$scores[,1],EDAdata_pca$scores[,2]))+xlab(&amp;quot;PC1&amp;quot;)+ylab(&amp;quot;PC2&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/Project1_files/figure-html/unnamed-chunk-5-2.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;EDAdata_pca$loadings[1:7,1:2]%&amp;gt;%as.data.frame%&amp;gt;%rownames_to_column%&amp;gt;%
+ggplot()+geom_hline(aes(yintercept=0),lty=2)+
+geom_vline(aes(xintercept=0),lty=2)+ylab(&amp;quot;PC2&amp;quot;)+xlab(&amp;quot;PC1&amp;quot;)+
+geom_segment(aes(x=0,y=0,xend=Comp.1,yend=Comp.2),arrow=arrow(),col=&amp;quot;red&amp;quot;)+
+geom_label(aes(x=Comp.1*1.1,y=Comp.2*1.1,label=rowname))&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/Project1_files/figure-html/unnamed-chunk-5-3.png&#34; width=&#34;672&#34; /&gt;
+# Based on the Plot of loadings, it can be said that since perc_no_pervious, perc_not_distracted, perc_alcohol and perc_speeding are closer to -1 and 1 respectively, they are variables that strongly influences the component. However, since num_drivers, Cost(IP&amp;amp;L), and rate.male are closer to 0, they have a weak influence on the component. Since num_drivers, Cost(IP&amp;amp;L), and rate.male are going the in opposite direction compared to the rest of the variables, it can be said that they have little to no correlation with the other variables. On the other hand, perc_alcohol, perc_speeding, and perc_not_distracted are highly correlated because the angle they form with one another are small. While they don’t have a high correlation with num_drivers, cost(IP&amp;amp;L), and rate.male because they angle they form with those variables are extremely big.&lt;/p&gt;
+&lt;/div&gt;
+</description>
+            </item>
+        
+            <item>
+                <title></title>
+                <link>/project2/</link>
+                <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+                
+                <guid>/project2/</guid>
+                <description>
+
+
+&lt;p&gt;#Title: SDS 348 Project: 2 Modeling, Testing, and Predicting
+#Author: Tu Hoang (tah2957)
+#Date: 11/27/2019
+—&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;bad_drivers2&amp;lt;-bad_drivers%&amp;gt;%pivot_longer(cols = c(&amp;quot;insurance_premiums&amp;quot;,&amp;quot;losses&amp;quot;), 
+names_to = &amp;quot;PPIL&amp;quot;,
+values_to=&amp;quot;Cost(IP &amp;amp; L)&amp;quot;)
+glimpse(bad_drivers2)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Observations: 102
+## Variables: 8
+## $ state               &amp;lt;chr&amp;gt; &amp;quot;Alabama&amp;quot;, &amp;quot;Alabama&amp;quot;, &amp;quot;Alaska&amp;quot;, &amp;quot;Alaska&amp;quot;, &amp;quot;Arizon…
+## $ num_drivers         &amp;lt;dbl&amp;gt; 18.8, 18.8, 18.1, 18.1, 18.6, 18.6, 22.4, 22.4, 1…
+## $ perc_speeding       &amp;lt;int&amp;gt; 39, 39, 41, 41, 35, 35, 18, 18, 35, 35, 37, 37, 4…
+## $ perc_alcohol        &amp;lt;int&amp;gt; 30, 30, 25, 25, 28, 28, 26, 26, 28, 28, 28, 28, 3…
+## $ perc_not_distracted &amp;lt;int&amp;gt; 96, 96, 90, 90, 84, 84, 94, 94, 91, 91, 79, 79, 8…
+## $ perc_no_previous    &amp;lt;int&amp;gt; 80, 80, 94, 94, 96, 96, 95, 95, 89, 89, 95, 95, 8…
+## $ PPIL                &amp;lt;chr&amp;gt; &amp;quot;insurance_premiums&amp;quot;, &amp;quot;losses&amp;quot;, &amp;quot;insurance_premiu…
+## $ `Cost(IP &amp;amp; L)`      &amp;lt;dbl&amp;gt; 784.55, 145.08, 1053.48, 133.93, 899.47, 110.35, …&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;MTP2&amp;lt;-full_join(bad_drivers2,USCancerRates,by=&amp;quot;state&amp;quot;)%&amp;gt;%glimpse()&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Warning: Column `state` joining character vector and factor, coercing into
+## character vector&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Observations: 6,086
+## Variables: 15
+## $ state               &amp;lt;chr&amp;gt; &amp;quot;Alabama&amp;quot;, &amp;quot;Alabama&amp;quot;, &amp;quot;Alabama&amp;quot;, &amp;quot;Alabama&amp;quot;, &amp;quot;Alab…
+## $ num_drivers         &amp;lt;dbl&amp;gt; 18.8, 18.8, 18.8, 18.8, 18.8, 18.8, 18.8, 18.8, 1…
+## $ perc_speeding       &amp;lt;int&amp;gt; 39, 39, 39, 39, 39, 39, 39, 39, 39, 39, 39, 39, 3…
+## $ perc_alcohol        &amp;lt;int&amp;gt; 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 3…
+## $ perc_not_distracted &amp;lt;int&amp;gt; 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 9…
+## $ perc_no_previous    &amp;lt;int&amp;gt; 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 8…
+## $ PPIL                &amp;lt;chr&amp;gt; &amp;quot;insurance_premiums&amp;quot;, &amp;quot;insurance_premiums&amp;quot;, &amp;quot;insu…
+## $ `Cost(IP &amp;amp; L)`      &amp;lt;dbl&amp;gt; 784.55, 784.55, 784.55, 784.55, 784.55, 784.55, 7…
+## $ rate.male           &amp;lt;dbl&amp;gt; 363.7, 345.7, 340.7, 335.9, 330.1, 328.1, 327.9, …
+## $ LCL95.male          &amp;lt;dbl&amp;gt; 311.1, 274.2, 304.5, 288.9, 293.4, 255.9, 261.4, …
+## $ UCL95.male          &amp;lt;dbl&amp;gt; 423.2, 431.4, 380.9, 389.1, 370.6, 416.6, 408.0, …
+## $ rate.female         &amp;lt;dbl&amp;gt; 151.0, 140.5, 182.3, 185.3, 172.0, 124.1, 174.2, …
+## $ LCL95.female        &amp;lt;dbl&amp;gt; 123.6, 102.8, 161.3, 157.2, 151.4, 88.5, 133.3, 1…
+## $ UCL95.female        &amp;lt;dbl&amp;gt; 183.6, 189.7, 205.5, 217.5, 195.0, 171.7, 225.4, …
+## $ county              &amp;lt;I&amp;lt;chr&amp;gt;&amp;gt; Pickens County, Bullock County, Russell County…&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;MTP3&amp;lt;-MTP2%&amp;gt;%mutate(`PPIL`, &amp;quot;PIL&amp;quot; = with(MTP2,ifelse(`PPIL` == &amp;quot;insurance_premiums&amp;quot;, yes = 1, no = 0)))%&amp;gt;%na.omit()%&amp;gt;%glimpse()&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Observations: 5,936
+## Variables: 16
+## $ state               &amp;lt;chr&amp;gt; &amp;quot;Alabama&amp;quot;, &amp;quot;Alabama&amp;quot;, &amp;quot;Alabama&amp;quot;, &amp;quot;Alabama&amp;quot;, &amp;quot;Alab…
+## $ num_drivers         &amp;lt;dbl&amp;gt; 18.8, 18.8, 18.8, 18.8, 18.8, 18.8, 18.8, 18.8, 1…
+## $ perc_speeding       &amp;lt;int&amp;gt; 39, 39, 39, 39, 39, 39, 39, 39, 39, 39, 39, 39, 3…
+## $ perc_alcohol        &amp;lt;int&amp;gt; 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 3…
+## $ perc_not_distracted &amp;lt;int&amp;gt; 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 9…
+## $ perc_no_previous    &amp;lt;int&amp;gt; 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 8…
+## $ PPIL                &amp;lt;chr&amp;gt; &amp;quot;insurance_premiums&amp;quot;, &amp;quot;insurance_premiums&amp;quot;, &amp;quot;insu…
+## $ `Cost(IP &amp;amp; L)`      &amp;lt;dbl&amp;gt; 784.55, 784.55, 784.55, 784.55, 784.55, 784.55, 7…
+## $ rate.male           &amp;lt;dbl&amp;gt; 363.7, 345.7, 340.7, 335.9, 330.1, 328.1, 327.9, …
+## $ LCL95.male          &amp;lt;dbl&amp;gt; 311.1, 274.2, 304.5, 288.9, 293.4, 255.9, 261.4, …
+## $ UCL95.male          &amp;lt;dbl&amp;gt; 423.2, 431.4, 380.9, 389.1, 370.6, 416.6, 408.0, …
+## $ rate.female         &amp;lt;dbl&amp;gt; 151.0, 140.5, 182.3, 185.3, 172.0, 124.1, 174.2, …
+## $ LCL95.female        &amp;lt;dbl&amp;gt; 123.6, 102.8, 161.3, 157.2, 151.4, 88.5, 133.3, 1…
+## $ UCL95.female        &amp;lt;dbl&amp;gt; 183.6, 189.7, 205.5, 217.5, 195.0, 171.7, 225.4, …
+## $ county              &amp;lt;I&amp;lt;chr&amp;gt;&amp;gt; Pickens County, Bullock County, Russell County…
+## $ PIL                 &amp;lt;dbl&amp;gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1…&lt;/code&gt;&lt;/pre&gt;
+&lt;div id=&#34;introduction&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Introduction&lt;/h1&gt;
+&lt;p&gt;#The two dataset that I have decided to use for this Explorartory Data Anaylsis is a dataset named bad_drivers and another data set named USCancerRates. At first glance, these two dataset don’t have anything in common since one dealt with Cancer rates and the other dealt with factors contributing to inattentive drivers. I’ve decided to use this two dataset because I wanted to see if there was a plausible correction between inattentive drivers and cancer rates. Although, I know that there will not be a potential association data wise, these two dataset does show two of the top causes of death in America.
+#The USCancerRates dataset contain 3041 observations of 8 variables. Those variables are rate.male, LCL95.male, UCL.95.male,rate.female, LCL.95 female, UCL.95 female, UCL.95 female, state, and county. The data was obtained by the National Cancer Institute and made public through The National Vital Statistics System. I am instesting in this dataset because I love doing research on cancer. The second dataset involves bad drivers. It contains 51 rows of observation involving 8 variables. The variables are state, num_drivers, perc_speeding,perc_alcohol,perc_not_distracted, perc_no_pervious,insurance_premiums, and losses. The data came from the story “Dear Mona, which state has the worst drivers?”. I’m interested in this dataset because I see bad drivers everyday and I want to see if there a correlation between bad driving and getting cancer.
+—
+# MANOVA Testing&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;ggplot(MTP3, aes(x =rate.female, y = rate.male)) +
+geom_point(alpha = .5) + geom_density_2d(h=2) + coord_fixed() + facet_wrap(~PPIL)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/Project2_files/figure-html/unnamed-chunk-2-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;covmats&amp;lt;-MTP3%&amp;gt;%group_by(PPIL)%&amp;gt;%do(covs=cov(.[2:3])) 
+for(i in 1:3){print(covmats$covs[i])}&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## [[1]]
+##               num_drivers perc_speeding
+## num_drivers     12.832006      1.786393
+## perc_speeding    1.786393     91.652336
+## 
+## [[1]]
+##               num_drivers perc_speeding
+## num_drivers     12.832006      1.786393
+## perc_speeding    1.786393     91.652336
+## 
+## [[1]]
+## NULL&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;man1&amp;lt;-manova(cbind(rate.female,rate.male)~PPIL, data=MTP3)
+summary(man1)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##             Df    Pillai   approx F num Df den Df Pr(&amp;gt;F)
+## PPIL         1 2.381e-30 7.0632e-27      2   5933      1
+## Residuals 5934&lt;/code&gt;&lt;/pre&gt;
+&lt;div id=&#34;after-running-the-manova-test-the-results-was-not-signifant.-the-p-value-was-1-which-was-higher-than-0.05.-since-the-result-was-not-signifiant-further-testing-was-not-needed.-however-in-the-event-that-the-result-from-the-manova-test-was-significant-the-following-tests-would-have-been-conducted.-since-there-are-two-numeric-response-variables-with-a-categorical-predictor-variable-with-two-level-there-will-be-two-anova-test-conducted.-no-t-test-would-be-needed-because-the-anova-test-would-have-told-you-that-the-two-group-differed.-in-total-three-test-will-be-conducted-one-manova-and-2-anova.-the-probablity-of-at-least-one-type-1-error-is-equal-to-alpha-which-is-0.05.&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;# After running the MANOVA test, the results was not signifant. The p-value was 1, which was higher than 0.05. Since the result was not signifiant, further testing was not needed. However, in the event that the result from the MANOVA test was significant, the following tests would have been conducted. Since there are two numeric response variables with a categorical predictor variable with two level, there will be two anova test conducted. No t-test would be needed because the anova test would have told you that the two group differed. In total, three test will be conducted; one MANOVA, and 2 ANOVA. The probablity of at least one type 1 error is equal to alpha, which is 0.05.&lt;/h2&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div id=&#34;randomization-test&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Randomization Test&lt;/h1&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;rate.male1&amp;lt;-c(363.7,345.7,340.7,335.9,330.1,328.1,327.9,327.4,323.6,321.4)
+rate.female1&amp;lt;-c(151.0,140.5,182.3,185.3,172.0,124.1,174.2,157.7,184.5,161.4)
+
+rrmf&amp;lt;-data.frame(condition=c(rep(&amp;quot;rate.male1&amp;quot;,10),rep(&amp;quot;rate.female1&amp;quot;,10)),time=c(rate.male1,rate.female1))
+head(rrmf)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##    condition  time
+## 1 rate.male1 363.7
+## 2 rate.male1 345.7
+## 3 rate.male1 340.7
+## 4 rate.male1 335.9
+## 5 rate.male1 330.1
+## 6 rate.male1 328.1&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;ggplot(rrmf,aes(time,fill=condition))+geom_histogram(bins=6.5)+facet_wrap(~condition,ncol=2)+theme_classic()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/Project2_files/figure-html/unnamed-chunk-3-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;rand_dist&amp;lt;-vector()
+
+rrmf%&amp;gt;%group_by(condition)%&amp;gt;%summarize(s=sd(time))%&amp;gt;%summarize(diff(s))&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## # A tibble: 1 x 1
+##   `diff(s)`
+##       &amp;lt;dbl&amp;gt;
+## 1     -7.61&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;for(i in 1:5000){ 
+new&amp;lt;-data.frame(time=sample(rrmf$time),condition=rrmf$condition)
+rand_dist[i]&amp;lt;-mean(new[new$condition==&amp;quot;rate.female1&amp;quot;,]$time)-
+              mean(new[new$condition==&amp;quot;rate.male1&amp;quot;,]$time)
+}
+
+mean(rand_dist&amp;lt;- -7.612046)*2&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## [1] -15.22409&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;{hist(rand_dist,main=&amp;quot;&amp;quot;,ylab=&amp;quot;&amp;quot;); abline(v = -7.612046,col=&amp;quot;red&amp;quot;)}&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/Project2_files/figure-html/unnamed-chunk-3-2.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;mean(rand_dist&amp;gt;15.22409)*2&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## [1] 0&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;t.test(data=rrmf,time~condition)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## 
+##  Welch Two Sample t-test
+## 
+## data:  time by condition
+## t = -22.527, df = 15.117, p-value = 4.789e-13
+## alternative hypothesis: true difference in means is not equal to 0
+## 95 percent confidence interval:
+##  -187.3325 -154.9675
+## sample estimates:
+## mean in group rate.female1   mean in group rate.male1 
+##                     163.30                     334.45&lt;/code&gt;&lt;/pre&gt;
+&lt;div id=&#34;ho-the-rate-of-male-is-more-significant-than-the-rate-of-female.-ha-the-rate-of-male-is-not-significant-than-the-rate-of-famle.-i-started-the-randomization-test-by-making-two-new-vectors.-i-called-the-first-vector-rate.female1-and-the-second-vector-rate.male1.-the-first-vector-contained-the-first-10-values-of-rate.female-from-the-mtp3-dataset.-the-second-vector-contained-the-first-10-values-of-rate.male-from-the-mtp3-dataset.-after-doing-the-randominzation-test-the-p-value-was-0.-this-is-common-to-have.-i-also-did-a-welch-two-sample-t-test-with-the-two-vectors.-the-p-value-was-4.789e-13.-the-p-value-after-the-t-test-was-4.789e-13-compared-to-0-from-the-randomization-test.&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;# Ho: The rate of male is more significant than the rate of female. Ha: The rate of male is not significant than the rate of famle. I started the randomization test by making two new vectors. I called the first vector rate.female1 and the second vector rate.male1. The first vector contained the first 10 values of rate.female from the MTP3 dataset. The second vector contained the first 10 values of rate.male from the MTP3 dataset. After doing the randominzation test, the p-value was 0. This is common to have. I also did a Welch Two Sample T-test with the two vectors. The p-value was 4.789e-13. The p-value after the t-test was 4.789e-13 compared to 0 from the randomization test.&lt;/h2&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div id=&#34;linear-regression-model&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Linear Regression Model&lt;/h1&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;MTP3$rate.male_c&amp;lt;-MTP3$rate.male-mean(MTP3$rate.male)
+MTP3$num_drivers_c&amp;lt;-MTP3$num_drivers-mean(MTP3$num_drivers)
+
+fit&amp;lt;-lm(rate.female~rate.male_c*num_drivers_c,data = MTP3)
+summary(fit)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## 
+## Call:
+## lm(formula = rate.female ~ rate.male_c * num_drivers_c, data = MTP3)
+## 
+## Residuals:
+##    Min     1Q Median     3Q    Max 
+## -96.88 -12.34   0.38  11.28 190.91 
+## 
+## Coefficients:
+##                             Estimate Std. Error t value Pr(&amp;gt;|t|)    
+## (Intercept)                1.649e+02  2.825e-01 583.941   &amp;lt;2e-16 ***
+## rate.male_c                2.357e-01  6.455e-03  36.518   &amp;lt;2e-16 ***
+## num_drivers_c             -1.678e-01  7.882e-02  -2.128   0.0333 *  
+## rate.male_c:num_drivers_c -7.926e-04  1.832e-03  -0.433   0.6654    
+## ---
+## Signif. codes:  0 &amp;#39;***&amp;#39; 0.001 &amp;#39;**&amp;#39; 0.01 &amp;#39;*&amp;#39; 0.05 &amp;#39;.&amp;#39; 0.1 &amp;#39; &amp;#39; 1
+## 
+## Residual standard error: 21.16 on 5932 degrees of freedom
+## Multiple R-squared:  0.1894, Adjusted R-squared:  0.189 
+## F-statistic: 462.1 on 3 and 5932 DF,  p-value: &amp;lt; 2.2e-16&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;new1&amp;lt;-MTP3
+new1$rate.male_c&amp;lt;-mean(MTP3$rate.male_c)
+new1$mean&amp;lt;-predict(fit,new1)
+new1$rate.male_c&amp;lt;-mean(MTP3$rate.male_c)+sd(MTP3$rate.male_c)
+new1$plus.sd&amp;lt;-predict(fit,new1)
+new1$rate.male_c&amp;lt;-mean(MTP3$rate.male_c)-sd(MTP3$rate.male_c)
+new1$minus.sd&amp;lt;-predict(fit,new1)
+newint&amp;lt;-new1%&amp;gt;%select(rate.female,num_drivers_c,mean,plus.sd,minus.sd)%&amp;gt;%gather(rate.male,value,-rate.female,-num_drivers_c)
+
+
+mycols&amp;lt;-c(&amp;quot;#619CFF&amp;quot;,&amp;quot;#F8766D&amp;quot;,&amp;quot;#00BA38&amp;quot;)
+names(mycols)&amp;lt;-c(&amp;quot;-1 sd&amp;quot;,&amp;quot;mean&amp;quot;,&amp;quot;+1 sd&amp;quot;)
+mycols=as.factor(mycols)
+
+ggplot(MTP3,aes(rate.male_c,num_drivers_c,rate.female),group=mycols)+geom_point()+geom_line(data=new1,aes(y=mean,color=&amp;quot;mean&amp;quot;))+geom_line(data=new1,aes(y=plus.sd,color=&amp;quot;+1 sd&amp;quot;))+geom_line(data=new1,aes(y=minus.sd,color=&amp;quot;-1 sd&amp;quot;))+scale_color_manual(values=mycols)+labs(color=&amp;quot;rate.female (cont)&amp;quot;)+theme(legend.position=c(.9,.2))&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/Project2_files/figure-html/unnamed-chunk-4-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;resRM&amp;lt;-lm(rate.female~rate.male_c,data = MTP3)$residuals
+resUCL&amp;lt;-lm(rate.female~num_drivers_c,data = MTP3)$residuals
+coef(lm(resRM~resUCL))&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##   (Intercept)        resUCL 
+## -7.212312e-15  8.176506e-01&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;coef(lm(rate.male~num_drivers_c+rate.female,data = MTP3))&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##   (Intercept) num_drivers_c   rate.female 
+##   128.1710437     2.4189164     0.7848703&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;resids&amp;lt;-fit$residuals 
+fitvals&amp;lt;-fit$fitted.values
+
+ggplot()+geom_point(aes(fitvals,resids))+geom_hline(yintercept=0, col=&amp;quot;red&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/Project2_files/figure-html/unnamed-chunk-4-2.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;bptest(fit)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## 
+##  studentized Breusch-Pagan test
+## 
+## data:  fit
+## BP = 38.925, df = 3, p-value = 1.8e-08&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;ggplot()+geom_histogram(aes(resids),bins=20)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/Project2_files/figure-html/unnamed-chunk-4-3.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;ggplot()+geom_qq(aes(sample=resids))+geom_qq_line(aes(sample=resids), color=&amp;#39;red&amp;#39;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/Project2_files/figure-html/unnamed-chunk-4-4.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;ks.test(resids, &amp;quot;pnorm&amp;quot;, sd=sd(resids))&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Warning in ks.test(resids, &amp;quot;pnorm&amp;quot;, sd = sd(resids)): ties should not be present
+## for the Kolmogorov-Smirnov test&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## 
+##  One-sample Kolmogorov-Smirnov test
+## 
+## data:  resids
+## D = 0.052106, p-value = 2.01e-14
+## alternative hypothesis: two-sided&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;coeftest(fit)[,1:2]&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##                                Estimate  Std. Error
+## (Intercept)                1.649431e+02 0.282465166
+## rate.male_c                2.357268e-01 0.006455170
+## num_drivers_c             -1.677586e-01 0.078816802
+## rate.male_c:num_drivers_c -7.925756e-04 0.001832305&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;coeftest(fit, vcov=vcovHC(fit))[,1:2]&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##                                Estimate  Std. Error
+## (Intercept)                1.649431e+02 0.283243049
+## rate.male_c                2.357268e-01 0.009022290
+## num_drivers_c             -1.677586e-01 0.076985708
+## rate.male_c:num_drivers_c -7.925756e-04 0.001984384&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;SST &amp;lt;- sum((MTP3$rate.female-mean(MTP3$rate.female))^2)
+SSR &amp;lt;- sum((fit$fitted.values-mean(MTP3$rate.female))^2) 
+SSE &amp;lt;- sum(fit$residuals^2) 
+
+SSR/SST&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## [1] 0.1894397&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;summary(fit)$r.sq&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## [1] 0.1894397&lt;/code&gt;&lt;/pre&gt;
+&lt;div id=&#34;when-a-linear-regression-model-was-conducted-with-the-response-variable-rate.female.-the-coefficients-was-the-rate.female-rate.male_c-and-num_drivers_c-both-of-which-was-mean-centered-because-they-are-numeric-variables.-the-final-coefficient-was-rate.male_cnum_drivers_c-which-was-the-interaction-between-the-two-predictor-variables.-when-speaking-about-the-coefficients-estimate-the-first-row-is-the-intercept-it-is-the-expected-values-of-what-the-number-of-driver-and-rate.male-should-be-in-regards-to-rate.female.-the-following-rows-after-the-intercept-are-the-slopes.-the-slopes-indicates-the-effect-that-the-predictor-variables-have-on-the-response-variable-in-this-case-the-rate.female.-the-results-of-the-linear-regression-model-are-as-followed-the-intercept-rate.male_c-and-num_drivers_c-were-the-only-significant-coefficient-with-a-p-value-less-than-0.05.-the-last-coefficients-rate.male_cnum_drivers_c-was-the-only-coefficient-that-was-not-significant-because-it-had-a-p-value-of-0.6654.-the-interaction-plot-shows-a-cluster-of-points-between--200-and-200.-when-looking-at-linearity-and-homoskedasticity-graphically-both-looked-okay.-but-the-breusch-pagan-test-was-conducted-as-well-to-confirmed-that-the-assumption-was-met.-with-a-p-value-of-1.8e-08-the-assumption-was-acceptable.-when-checking-on-the-normality-both-ggplot-does-look-normal-as-well.-but-a-kolmogorov-smirnov-test-was-conducted-as-well-to-confirmed-that-the-assumption-was-met.-the-p-value-was-less-than-0.05-which-mean-that-the-assumption-was-met.-after-conducting-the-coeftest-for-the-normal-theory-ses-and-robust-standard-errors-it-is-found-that-the-estimate-for-both-normal-theory-ses-and-robust-standard-errors-are-the-same.-however-there-were-some-changes-in-the-std.-error-between-the-normal-theory-ses-and-robust-standard-errors.-compared-to-the-normal-theory-ses-the-robust-standard-errors-had-a-slighty-higher-standard-error-for-3-of-the-4-coefficient.-those-coefficients-were-intercept-rate.male_c-and-rate.male_cnum_drivers_c.-the-proportion-of-the-variation-in-the-outcome-of-the-model-was-0.1894397.&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;# When a linear regression model was conducted with the response variable rate.female. The coefficients was the rate.female, rate.male_c, and num_drivers_c; both of which was mean centered because they are numeric variables. The final coefficient was rate.male_c:num_drivers_c; which was the interaction between the two predictor variables. When speaking about the coefficients estimate, the first row is the intercept; it is the expected values of what the “number of driver”&amp;quot; and “rate.male” should be in regards to rate.female. The following rows after the intercept are the slopes. The slopes indicates the effect that the predictor variables have on the response variable; in this case the rate.female. The results of the linear regression model are as followed; the intercept, rate.male_c, and num_drivers_c were the only significant coefficient with a p-value less than 0.05. The last coefficients, rate.male_c:num_drivers_c was the only coefficient that was not significant because it had a p-value of 0.6654. The interaction plot shows a cluster of points between -200 and 200. When looking at linearity and homoskedasticity graphically, both looked okay. But, the Breusch-Pagan test was conducted as well to confirmed that the assumption was met. With a p-value of 1.8e-08, the assumption was acceptable. When checking on the normality, both ggplot does look normal as well. But, a Kolmogorov-Smirnov Test was conducted as well to confirmed that the assumption was met. The p-value was less than 0.05; which mean that the assumption was met. After conducting the coeftest for the normal-theory SEs and Robust standard errors, it is found that the estimate for both normal-theory SEs and robust standard errors are the same. However, there were some changes in the Std. Error between the normal-theory SEs and robust standard errors. Compared to the normal-theory SEs, the robust standard errors had a slighty higher standard error for 3 of the 4 coefficient. Those coefficients were Intercept, rate.male_c, and rate.male_c:num_drivers_c. The proportion of the variation in the outcome of the model was 0.1894397.&lt;/h2&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div id=&#34;rerun-regression-model&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Rerun Regression Model&lt;/h1&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;fit&amp;lt;-lm(rate.female~rate.male_c*num_drivers_c,data = MTP3)
+summary(fit)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## 
+## Call:
+## lm(formula = rate.female ~ rate.male_c * num_drivers_c, data = MTP3)
+## 
+## Residuals:
+##    Min     1Q Median     3Q    Max 
+## -96.88 -12.34   0.38  11.28 190.91 
+## 
+## Coefficients:
+##                             Estimate Std. Error t value Pr(&amp;gt;|t|)    
+## (Intercept)                1.649e+02  2.825e-01 583.941   &amp;lt;2e-16 ***
+## rate.male_c                2.357e-01  6.455e-03  36.518   &amp;lt;2e-16 ***
+## num_drivers_c             -1.678e-01  7.882e-02  -2.128   0.0333 *  
+## rate.male_c:num_drivers_c -7.926e-04  1.832e-03  -0.433   0.6654    
+## ---
+## Signif. codes:  0 &amp;#39;***&amp;#39; 0.001 &amp;#39;**&amp;#39; 0.01 &amp;#39;*&amp;#39; 0.05 &amp;#39;.&amp;#39; 0.1 &amp;#39; &amp;#39; 1
+## 
+## Residual standard error: 21.16 on 5932 degrees of freedom
+## Multiple R-squared:  0.1894, Adjusted R-squared:  0.189 
+## F-statistic: 462.1 on 3 and 5932 DF,  p-value: &amp;lt; 2.2e-16&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;coeftest(fit)[,1:2]&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##                                Estimate  Std. Error
+## (Intercept)                1.649431e+02 0.282465166
+## rate.male_c                2.357268e-01 0.006455170
+## num_drivers_c             -1.677586e-01 0.078816802
+## rate.male_c:num_drivers_c -7.925756e-04 0.001832305&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;coeftest(fit, vcov=vcovHC(fit))[,1:2]&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##                                Estimate  Std. Error
+## (Intercept)                1.649431e+02 0.283243049
+## rate.male_c                2.357268e-01 0.009022290
+## num_drivers_c             -1.677586e-01 0.076985708
+## rate.male_c:num_drivers_c -7.925756e-04 0.001984384&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;samp_distn&amp;lt;-replicate(5000,{
+  boot_dat&amp;lt;-boot_dat&amp;lt;-MTP3[sample(nrow(MTP3),replace = TRUE),]
+  fit&amp;lt;-lm(rate.female~rate.male_c*num_drivers_c,data = boot_dat)
+  coef(fit)
+})
+
+samp_distn%&amp;gt;%t%&amp;gt;%as.data.frame%&amp;gt;%summarize_all(sd)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##   (Intercept) rate.male_c num_drivers_c rate.male_c:num_drivers_c
+## 1   0.2797763 0.008916636    0.07669202               0.001978833&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;samp_distn%&amp;gt;%t%&amp;gt;%as.data.frame%&amp;gt;%gather%&amp;gt;%group_by(key)%&amp;gt;% summarize(lower=quantile(value,.025), upper=quantile(value,.975))&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## # A tibble: 4 x 3
+##   key                           lower     upper
+##   &amp;lt;chr&amp;gt;                         &amp;lt;dbl&amp;gt;     &amp;lt;dbl&amp;gt;
+## 1 (Intercept)               164.      166.     
+## 2 num_drivers_c              -0.322    -0.0207 
+## 3 rate.male_c                 0.219     0.253  
+## 4 rate.male_c:num_drivers_c  -0.00460   0.00316&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;fit2&amp;lt;-lm(rate.female ~ rate.male_c * num_drivers_c, data=MTP3) 
+resids&amp;lt;-fit2$residuals 
+fitted&amp;lt;-fit2$fitted.values
+
+resid_resamp&amp;lt;-replicate(5000,{ 
+  new_resids&amp;lt;-sample(resids,replace=TRUE) 
+  newdat&amp;lt;-MTP3 
+  newdat$new_y&amp;lt;-fitted+new_resids
+fit2&amp;lt;-lm(new_y ~ rate.male_c * num_drivers_c, data = newdat)
+coef(fit2)
+})
+
+resid_resamp%&amp;gt;%t%&amp;gt;%as.data.frame%&amp;gt;%summarize_all(sd)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##   (Intercept) rate.male_c num_drivers_c rate.male_c:num_drivers_c
+## 1   0.2840403 0.006475498     0.0783563               0.001817423&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;resid_resamp%&amp;gt;%t%&amp;gt;%as.data.frame%&amp;gt;%gather%&amp;gt;%group_by(key)%&amp;gt;% summarize(lower=quantile(value,.025), upper=quantile(value,.975))&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## # A tibble: 4 x 3
+##   key                           lower     upper
+##   &amp;lt;chr&amp;gt;                         &amp;lt;dbl&amp;gt;     &amp;lt;dbl&amp;gt;
+## 1 (Intercept)               164.      166.     
+## 2 num_drivers_c              -0.320    -0.0103 
+## 3 rate.male_c                 0.223     0.249  
+## 4 rate.male_c:num_drivers_c  -0.00435   0.00276&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;coeftest(fit2)[,1:2]&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##                                Estimate  Std. Error
+## (Intercept)                1.649431e+02 0.282465166
+## rate.male_c                2.357268e-01 0.006455170
+## num_drivers_c             -1.677586e-01 0.078816802
+## rate.male_c:num_drivers_c -7.925756e-04 0.001832305&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;coeftest(fit2, vcov=vcovHC(fit2))[,1:2]&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##                                Estimate  Std. Error
+## (Intercept)                1.649431e+02 0.283243049
+## rate.male_c                2.357268e-01 0.009022290
+## num_drivers_c             -1.677586e-01 0.076985708
+## rate.male_c:num_drivers_c -7.925756e-04 0.001984384&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;samp_distn%&amp;gt;%t%&amp;gt;%as.data.frame%&amp;gt;%summarize_all(sd)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##   (Intercept) rate.male_c num_drivers_c rate.male_c:num_drivers_c
+## 1   0.2797763 0.008916636    0.07669202               0.001978833&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;resid_resamp%&amp;gt;%t%&amp;gt;%as.data.frame%&amp;gt;%summarize_all(sd)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##   (Intercept) rate.male_c num_drivers_c rate.male_c:num_drivers_c
+## 1   0.2840403 0.006475498     0.0783563               0.001817423&lt;/code&gt;&lt;/pre&gt;
+&lt;div id=&#34;after-rerunning-the-regression-model-there-were-no-changes-in-the-ses-in-the-rerunned-model-compared-to-the-original-ses-and-the-robust-ses.-both-regression-model-had-similar-output.-there-were-not-a-significant-different-in-the-p-value-either-given-that-the-output-for-both-model-were-really-similar.&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;# After rerunning the regression model, there were no changes in the SEs in the rerunned model compared to the original SEs and the robust SEs. Both regression model had similar output. There were not a significant different in the p-value either given that the output for both model were really similar.&lt;/h2&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div id=&#34;logistic-regression-model&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Logistic Regression Model&lt;/h1&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;MTP3$outcome&amp;lt;-factor(MTP3$PPIL,levels=c(&amp;quot;insurance_premiums&amp;quot;,&amp;quot;losses&amp;quot;))
+
+fit3&amp;lt;-glm(PIL~rate.male+rate.female+perc_not_distracted,data = MTP3,family = binomial(link = &amp;quot;logit&amp;quot;))
+summary(fit3)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## 
+## Call:
+## glm(formula = PIL ~ rate.male + rate.female + perc_not_distracted, 
+##     family = binomial(link = &amp;quot;logit&amp;quot;), data = MTP3)
+## 
+## Deviance Residuals: 
+##    Min      1Q  Median      3Q     Max  
+## -1.177  -1.177   0.000   1.177   1.177  
+## 
+## Coefficients:
+##                       Estimate Std. Error z value Pr(&amp;gt;|z|)
+## (Intercept)          5.634e-14  2.485e-01       0        1
+## rate.male           -2.269e-17  6.587e-04       0        1
+## rate.female          6.299e-18  1.227e-03       0        1
+## perc_not_distracted -5.980e-16  1.569e-03       0        1
+## 
+## (Dispersion parameter for binomial family taken to be 1)
+## 
+##     Null deviance: 8229  on 5935  degrees of freedom
+## Residual deviance: 8229  on 5932  degrees of freedom
+## AIC: 8237
+## 
+## Number of Fisher Scoring iterations: 2&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;coeftest(fit3)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## 
+## z test of coefficients:
+## 
+##                        Estimate  Std. Error z value Pr(&amp;gt;|z|)
+## (Intercept)          5.6337e-14  2.4845e-01       0        1
+## rate.male           -2.2693e-17  6.5870e-04       0        1
+## rate.female          6.2986e-18  1.2270e-03       0        1
+## perc_not_distracted -5.9798e-16  1.5689e-03       0        1&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;coef(fit3)%&amp;gt;%round(5)%&amp;gt;%data.frame&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##                     .
+## (Intercept)         0
+## rate.male           0
+## rate.female         0
+## perc_not_distracted 0&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;coef(fit3)%&amp;gt;%exp%&amp;gt;%round(5)%&amp;gt;%data.frame&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##                     .
+## (Intercept)         1
+## rate.male           1
+## rate.female         1
+## perc_not_distracted 1&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;exp(coef(fit3))&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##         (Intercept)           rate.male         rate.female perc_not_distracted 
+##                   1                   1                   1                   1&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;odds2prob&amp;lt;-function(odds){odds/(1+odds)}
+
+odds2prob(-31.2553253342)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## [1] 1.033052&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;pca1&amp;lt;-princomp(MTP3[c(&amp;#39;rate.male&amp;#39;,&amp;#39;rate.female&amp;#39;,&amp;#39;perc_not_distracted&amp;#39;)])
+MTP3$predictor&amp;lt;-pca1$scores[,1]
+MTP3$prob&amp;lt;-predict(fit3,type=&amp;quot;response&amp;quot;)
+
+ggplot(MTP3, aes(predictor,prob))+geom_point(aes(color=outcome),alpha=.5,size=3)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/Project2_files/figure-html/unnamed-chunk-6-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;tdat&amp;lt;-MTP3%&amp;gt;%mutate(prob=predict(fit3,type = &amp;quot;response&amp;quot;),prediction=ifelse(prob&amp;gt;.5,1,0))
+classify&amp;lt;-tdat%&amp;gt;%transmute(prob,prediction,truth=PIL)
+
+
+# Confusion Table and Calculations
+table(prediction=classify$prediction,truth=classify$truth)%&amp;gt;%addmargins()&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##           truth
+## prediction    0    1  Sum
+##        0   2092 2092 4184
+##        1    876  876 1752
+##        Sum 2968 2968 5936&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# Accurary
+(940+2028)/5936&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## [1] 0.5&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# Sensitivity(TPR)
+(2028/2968)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## [1] 0.6832884&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# Specificity(TNR)
+(940/2968)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## [1] 0.3167116&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;#Precision (PPV)
+(2028/4056)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## [1] 0.5&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# Generating Logit vs. Density Plot
+logit&amp;lt;-function(p)log(odds(p))
+
+tdat$logit&amp;lt;-predict(fit3)
+tdat$outcome&amp;lt;-factor(tdat$outcome,levels=c(&amp;quot;insurance_premiums&amp;quot;,&amp;quot;losses&amp;quot;))
+ggplot(tdat,aes(logit, fill=outcome))+geom_density(alpha=.3)+
+  geom_vline(xintercept=0,lty=2)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/Project2_files/figure-html/unnamed-chunk-6-2.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# Generating ROC curve and Calculating AUC 
+sens&amp;lt;-function(p,data=tdat, y=PIL) mean(tdat[tdat$PIL==1,]$prob&amp;gt;p)
+spec&amp;lt;-function(p,data=tdat, y=PIL) mean(tdat[tdat$PIL==0,]$prob&amp;lt;p)
+
+sensitivity&amp;lt;-sapply(seq(0,1,.01),sens,tdat)
+specificity&amp;lt;-sapply(seq(0,1,.01),spec,tdat)
+
+ROC1&amp;lt;-data.frame(sensitivity,specificity,cutoff=seq(0,1,.01))
+ROC1%&amp;gt;%gather(key,rate,-cutoff)%&amp;gt;%ggplot(aes(cutoff,rate,color=key))+geom_path()+ geom_vline(xintercept=c(.1,.5),lty=2,color=&amp;quot;gray50&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/Project2_files/figure-html/unnamed-chunk-6-3.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;ROC1$TPR&amp;lt;-sensitivity 
+ROC1$FPR&amp;lt;-1-specificity
+ROC1%&amp;gt;%ggplot(aes(FPR,TPR))+geom_path(size=1.5)+geom_segment(aes(x=0,y=0,xend=1,yend=1),lty=2)+ scale_x_continuous(limits = c(0,1))&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/Project2_files/figure-html/unnamed-chunk-6-4.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;ROCplot&amp;lt;-ggplot(tdat)+geom_roc(aes(d=PIL,m=prob), n.cuts=0)
+ROCplot&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/Project2_files/figure-html/unnamed-chunk-6-5.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;calc_auc(ROCplot)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##   PANEL group AUC
+## 1     1    -1 0.5&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# K10 Fold CV
+tdat1= subset(tdat, select = -c(county))
+
+
+class_diag&amp;lt;-function(probs,truth){
+tab&amp;lt;-table(factor(probs&amp;gt;.5,levels=c(&amp;quot;FALSE&amp;quot;,&amp;quot;TRUE&amp;quot;)),truth) 
+acc=sum(diag(tab))/sum(tab)
+sens=tab[2,2]/colSums(tab)[2]
+spec=tab[1,1]/colSums(tab)[1]
+ppv=tab[2,2]/rowSums(tab)[2]
+if(is.numeric(truth)==FALSE &amp;amp; is.logical(truth)==FALSE) truth&amp;lt;-as.numeric(truth)-1
+  #CALCULATE EXACT AUC
+ord&amp;lt;-order(probs, decreasing=TRUE)
+probs &amp;lt;- probs[ord]; truth &amp;lt;- truth[ord]
+TPR=cumsum(truth)/max(1,sum(truth)) 
+FPR=cumsum(!truth)/max(1,sum(!truth))
+dup&amp;lt;-c(probs[-1]&amp;gt;=probs[-length(probs)], FALSE) 
+TPR&amp;lt;-c(0,TPR[!dup],1); FPR&amp;lt;-c(0,FPR[!dup],1)
+n &amp;lt;- length(TPR)
+auc&amp;lt;- sum( ((TPR[-1]+TPR[-n])/2) * (FPR[-1]-FPR[-n]) )
+data.frame(acc,sens,spec,ppv,auc)
+}
+
+
+set.seed(1234)
+k = 10
+
+data &amp;lt;- tdat1[sample(nrow(tdat1)), ]
+folds &amp;lt;- cut(seq(1:nrow(tdat1)), breaks = k, labels = F)
+diags &amp;lt;- NULL
+
+for (i in 1:k) {
+    train &amp;lt;- data[folds != i, ]
+    test &amp;lt;- data[folds == i, ]
+    truth &amp;lt;- test$PIL
+    fit5 &amp;lt;- glm(PIL ~ ., data = train, family = &amp;quot;binomial&amp;quot;(link = &amp;quot;logit&amp;quot;))
+    probs2 &amp;lt;- predict(fit5, newdata = test, type = &amp;quot;response&amp;quot;)
+    diags &amp;lt;- rbind(diags, class_diag(probs2, truth))
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Warning: glm.fit: algorithm did not converge&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Warning in predict.lm(object, newdata, se.fit, scale = 1, type = if (type == :
+## prediction from a rank-deficient fit may be misleading&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Warning: glm.fit: algorithm did not converge&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Warning in predict.lm(object, newdata, se.fit, scale = 1, type = if (type == :
+## prediction from a rank-deficient fit may be misleading&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Warning: glm.fit: algorithm did not converge&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Warning in predict.lm(object, newdata, se.fit, scale = 1, type = if (type == :
+## prediction from a rank-deficient fit may be misleading&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Warning: glm.fit: algorithm did not converge&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Warning in predict.lm(object, newdata, se.fit, scale = 1, type = if (type == :
+## prediction from a rank-deficient fit may be misleading&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Warning: glm.fit: algorithm did not converge&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Warning in predict.lm(object, newdata, se.fit, scale = 1, type = if (type == :
+## prediction from a rank-deficient fit may be misleading&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Warning: glm.fit: algorithm did not converge&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Warning in predict.lm(object, newdata, se.fit, scale = 1, type = if (type == :
+## prediction from a rank-deficient fit may be misleading&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Warning: glm.fit: algorithm did not converge&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Warning in predict.lm(object, newdata, se.fit, scale = 1, type = if (type == :
+## prediction from a rank-deficient fit may be misleading&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Warning: glm.fit: algorithm did not converge&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Warning in predict.lm(object, newdata, se.fit, scale = 1, type = if (type == :
+## prediction from a rank-deficient fit may be misleading&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Warning: glm.fit: algorithm did not converge&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Warning in predict.lm(object, newdata, se.fit, scale = 1, type = if (type == :
+## prediction from a rank-deficient fit may be misleading&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Warning: glm.fit: algorithm did not converge&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Warning in predict.lm(object, newdata, se.fit, scale = 1, type = if (type == :
+## prediction from a rank-deficient fit may be misleading&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;apply(diags, 2, mean)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##  acc sens spec  ppv  auc 
+##    1    1    1    1    1&lt;/code&gt;&lt;/pre&gt;
+&lt;div id=&#34;after-running-the-logistic-regression-the-coefficients-that-was-intercept-rate.male-rate.female-and-perc_not_distracted.-only-the-intercept-and-rate.female-had-a-negative-value-while-rate.male-and-perc_not_distracted-had-positive-value.-all-of-the-coefficients-had-a-p-value-of-one.-this-mean-that-they-were-not-significant.-when-calculating-the-accuracy-sensitivity-specificity-and-recall-the-following-were-the-results.-the-accuracy-was-0.5-the-sensitivity-was-0.6832884-the-specificity-was-0.3167116-and-the-recall-was-0.5.-after-generating-a-roc-curve-and-calculating-the-auc-the-result-was-really-bad.-the-auc-was-0.5-which-on-the-scale-is-really-bad.-this-probably-means-that-there-was-a-set-of-random-data-values-which-are-not-able-to-distinguish-between-true-and-false.-after-doing-the-k-fold-cv-accuracy-sensitivity-and-recall-all-had-a-value-of-1.&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;# After running the logistic regression, the coefficients that was intercept, rate.male, rate.female, and perc_not_distracted. Only the intercept and rate.female had a negative value, while rate.male, and perc_not_distracted had positive value. All of the coefficients had a p-value of one. This mean that they were not significant. When calculating the accuracy, sensitivity, specificity, and recall, the following were the results. The accuracy was 0.5, the sensitivity was 0.6832884, the specificity was 0.3167116, and the recall was 0.5. After generating a ROC curve and calculating the AUC, the result was really bad. The AUC was 0.5, which on the scale is really bad. This probably means that there was a set of random data values which are not able to distinguish between true and false. After doing the k-fold CV, Accuracy, Sensitivity, and Recall all had a value of 1.&lt;/h2&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div id=&#34;lasso&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;LASSO&lt;/h1&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# Lasso
+x = model.matrix(PIL~.,tdat1)[,-1]
+y&amp;lt;-as.matrix(tdat1$PIL)
+
+cv&amp;lt;-cv.glmnet(x,y,family=&amp;quot;binomial&amp;quot;,)
+glimpse(cv)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## List of 11
+##  $ lambda    : num [1:72] 0.5 0.456 0.415 0.378 0.345 ...
+##  $ cvm       : num [1:72] 1.387 1.216 1.073 0.951 0.845 ...
+##  $ cvsd      : num [1:72] 1.46e-04 1.27e-04 1.07e-04 9.13e-05 7.86e-05 ...
+##  $ cvup      : num [1:72] 1.387 1.217 1.073 0.951 0.845 ...
+##  $ cvlo      : num [1:72] 1.387 1.216 1.073 0.951 0.845 ...
+##  $ nzero     : Named int [1:72] 0 2 2 2 2 2 2 2 2 2 ...
+##   ..- attr(*, &amp;quot;names&amp;quot;)= chr [1:72] &amp;quot;s0&amp;quot; &amp;quot;s1&amp;quot; &amp;quot;s2&amp;quot; &amp;quot;s3&amp;quot; ...
+##  $ call      : language cv.glmnet(x = x, y = y, family = &amp;quot;binomial&amp;quot;)
+##  $ name      : Named chr &amp;quot;Binomial Deviance&amp;quot;
+##   ..- attr(*, &amp;quot;names&amp;quot;)= chr &amp;quot;deviance&amp;quot;
+##  $ glmnet.fit:List of 13
+##   ..$ a0        : Named num [1:72] 9.46e-16 1.78e-01 3.43e-01 4.97e-01 6.43e-01 ...
+##   .. ..- attr(*, &amp;quot;names&amp;quot;)= chr [1:72] &amp;quot;s0&amp;quot; &amp;quot;s1&amp;quot; &amp;quot;s2&amp;quot; &amp;quot;s3&amp;quot; ...
+##   ..$ beta      :Formal class &amp;#39;dgCMatrix&amp;#39; [package &amp;quot;Matrix&amp;quot;] with 6 slots
+##   ..$ df        : int [1:72] 0 2 2 2 2 2 2 2 2 2 ...
+##   ..$ dim       : int [1:2] 68 72
+##   ..$ lambda    : num [1:72] 0.5 0.456 0.415 0.378 0.345 ...
+##   ..$ dev.ratio : num [1:72] 4.81e-15 1.23e-01 2.26e-01 3.14e-01 3.90e-01 ...
+##   ..$ nulldev   : num 8229
+##   ..$ npasses   : int 438
+##   ..$ jerr      : int 0
+##   ..$ offset    : logi FALSE
+##   ..$ classnames: chr [1:2] &amp;quot;0&amp;quot; &amp;quot;1&amp;quot;
+##   ..$ call      : language glmnet(x = x, y = y, family = &amp;quot;binomial&amp;quot;)
+##   ..$ nobs      : int 5936
+##   ..- attr(*, &amp;quot;class&amp;quot;)= chr [1:2] &amp;quot;lognet&amp;quot; &amp;quot;glmnet&amp;quot;
+##  $ lambda.min: num 0.000677
+##  $ lambda.1se: num 0.000677
+##  - attr(*, &amp;quot;class&amp;quot;)= chr &amp;quot;cv.glmnet&amp;quot;&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;lasso&amp;lt;-glmnet(x,y,family=&amp;quot;binomial&amp;quot;,lambda=cv$lambda.1se)
+coef(lasso)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## 69 x 1 sparse Matrix of class &amp;quot;dgCMatrix&amp;quot;
+##                                s0
+## (Intercept)          7.297833e+00
+## stateAlaska          .           
+## stateArizona         .           
+## stateArkansas        .           
+## stateCalifornia      .           
+## stateColorado        .           
+## stateConnecticut     .           
+## stateDelaware        .           
+## stateFlorida         .           
+## stateGeorgia         .           
+## stateIdaho           .           
+## stateIllinois        .           
+## stateIndiana         .           
+## stateIowa            .           
+## stateKansas          .           
+## stateKentucky        .           
+## stateLouisiana       .           
+## stateMaine           .           
+## stateMaryland        .           
+## stateMassachusetts   .           
+## stateMichigan        .           
+## stateMinnesota       .           
+## stateMississippi     .           
+## stateMissouri        .           
+## stateMontana         .           
+## stateNebraska        .           
+## stateNevada          .           
+## stateNew Hampshire   .           
+## stateNew Jersey      .           
+## stateNew Mexico      .           
+## stateNew York        .           
+## stateNorth Carolina  .           
+## stateNorth Dakota    .           
+## stateOhio            .           
+## stateOklahoma        .           
+## stateOregon          .           
+## statePennsylvania    .           
+## stateRhode Island    .           
+## stateSouth Carolina  .           
+## stateSouth Dakota    .           
+## stateTennessee       .           
+## stateTexas           .           
+## stateUtah            .           
+## stateVermont         .           
+## stateVirginia        .           
+## stateWashington      .           
+## stateWest Virginia   .           
+## stateWisconsin       .           
+## stateWyoming         .           
+## num_drivers          .           
+## perc_speeding        .           
+## perc_alcohol         .           
+## perc_not_distracted  .           
+## perc_no_previous     .           
+## PPILlosses          -1.459567e+01
+## `Cost(IP &amp;amp; L)`       .           
+## rate.male            .           
+## LCL95.male           .           
+## UCL95.male           .           
+## rate.female          .           
+## LCL95.female         .           
+## UCL95.female         .           
+## rate.male_c          .           
+## num_drivers_c        .           
+## outcomelosses       -1.119885e-13
+## predictor            .           
+## prob                 .           
+## prediction           .           
+## logit                .&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;glimpse(lasso)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## List of 13
+##  $ a0        : Named num 7.3
+##   ..- attr(*, &amp;quot;names&amp;quot;)= chr &amp;quot;s0&amp;quot;
+##  $ beta      :Formal class &amp;#39;dgCMatrix&amp;#39; [package &amp;quot;Matrix&amp;quot;] with 6 slots
+##   .. ..@ i       : int [1:2] 53 63
+##   .. ..@ p       : int [1:2] 0 2
+##   .. ..@ Dim     : int [1:2] 68 1
+##   .. ..@ Dimnames:List of 2
+##   .. ..@ x       : num [1:2] -1.46e+01 -1.12e-13
+##   .. ..@ factors : list()
+##  $ df        : int 2
+##  $ dim       : int [1:2] 68 1
+##  $ lambda    : num 0.000677
+##  $ dev.ratio : num 0.999
+##  $ nulldev   : num 8229
+##  $ npasses   : int 25
+##  $ jerr      : int 0
+##  $ offset    : logi FALSE
+##  $ classnames: chr [1:2] &amp;quot;0&amp;quot; &amp;quot;1&amp;quot;
+##  $ call      : language glmnet(x = x, y = y, family = &amp;quot;binomial&amp;quot;, lambda = cv$lambda.1se)
+##  $ nobs      : int 5936
+##  - attr(*, &amp;quot;class&amp;quot;)= chr [1:2] &amp;quot;lognet&amp;quot; &amp;quot;glmnet&amp;quot;&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;prob&amp;lt;-predict(fit,type=&amp;quot;response&amp;quot;)
+pred&amp;lt;-ifelse(prob&amp;gt;.5,1,0)
+
+table(predictions=pred,truth=tdat1$PIL)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##            truth
+## predictions    0    1
+##           1 2968 2968&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# 10-fold CV
+
+set.seed(1234)
+k=10
+
+data1&amp;lt;-tdat1[sample(nrow(tdat1)),]
+folds&amp;lt;-cut(seq(1:nrow(tdat1)),breaks=k,labels=F)
+
+diags2&amp;lt;-NULL
+for(i in 1:k){
+train2&amp;lt;-data1[folds!=i,]
+test2&amp;lt;-data1[folds==i,]
+truth2&amp;lt;-test$PIL
+fit6&amp;lt;- glm(PIL~PPIL+outcome,data=train,family=binomial(link=&amp;quot;logit&amp;quot;))
+probs2&amp;lt;- predict(fit6, newdata=test, type=&amp;quot;response&amp;quot;)
+diags2&amp;lt;-rbind(diags2,class_diag(probs2,truth2))}&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Warning: glm.fit: algorithm did not converge&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Warning in predict.lm(object, newdata, se.fit, scale = 1, type = if (type == :
+## prediction from a rank-deficient fit may be misleading&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Warning: glm.fit: algorithm did not converge&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Warning in predict.lm(object, newdata, se.fit, scale = 1, type = if (type == :
+## prediction from a rank-deficient fit may be misleading&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Warning: glm.fit: algorithm did not converge&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Warning in predict.lm(object, newdata, se.fit, scale = 1, type = if (type == :
+## prediction from a rank-deficient fit may be misleading&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Warning: glm.fit: algorithm did not converge&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Warning in predict.lm(object, newdata, se.fit, scale = 1, type = if (type == :
+## prediction from a rank-deficient fit may be misleading&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Warning: glm.fit: algorithm did not converge&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Warning in predict.lm(object, newdata, se.fit, scale = 1, type = if (type == :
+## prediction from a rank-deficient fit may be misleading&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Warning: glm.fit: algorithm did not converge&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Warning in predict.lm(object, newdata, se.fit, scale = 1, type = if (type == :
+## prediction from a rank-deficient fit may be misleading&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Warning: glm.fit: algorithm did not converge&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Warning in predict.lm(object, newdata, se.fit, scale = 1, type = if (type == :
+## prediction from a rank-deficient fit may be misleading&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Warning: glm.fit: algorithm did not converge&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Warning in predict.lm(object, newdata, se.fit, scale = 1, type = if (type == :
+## prediction from a rank-deficient fit may be misleading&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Warning: glm.fit: algorithm did not converge&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Warning in predict.lm(object, newdata, se.fit, scale = 1, type = if (type == :
+## prediction from a rank-deficient fit may be misleading&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Warning: glm.fit: algorithm did not converge&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Warning in predict.lm(object, newdata, se.fit, scale = 1, type = if (type == :
+## prediction from a rank-deficient fit may be misleading&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;apply(diags2,2,mean)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##  acc sens spec  ppv  auc 
+##    1    1    1    1    1&lt;/code&gt;&lt;/pre&gt;
+&lt;div id=&#34;after-running-the-lasso-test-ppillosses-and-outcomelosses-were-retained-because-they-were-non-zero-values.-the-lambda.1se-number-was-0.000677.-when-conducting-the-10-fold-cv-the-acc-sens-spec-ppv-and-auc-had-a-value-of-1.-when-compared-to-those-values-in-question-5-the-values-obtained-in-this-10-fold-cv-were-identical-to-the-other-values.&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;# After running the LASSO test, PPILlosses and outcomelosses were retained because they were non-zero values. The lambda.1se: number was 0.000677. When conducting the 10-fold CV, the ACC, Sens, spec, ppv, and auc had a value of 1. When compared to those values in question 5, the values obtained in this 10-fold CV were identical to the other values.&lt;/h2&gt;
+&lt;pre&gt;&lt;code&gt;## R version 3.6.1 (2019-07-05)
+## Platform: x86_64-apple-darwin15.6.0 (64-bit)
+## Running under: macOS Catalina 10.15.1
+## 
+## Matrix products: default
+## BLAS:   /Library/Frameworks/R.framework/Versions/3.6/Resources/lib/libRblas.0.dylib
+## LAPACK: /Library/Frameworks/R.framework/Versions/3.6/Resources/lib/libRlapack.dylib
+## 
+## locale:
+## [1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
+## 
+## attached base packages:
+## [1] stats     graphics  grDevices utils     datasets  methods   base     
+## 
+## other attached packages:
+##  [1] glmnet_3.0-1          Matrix_1.2-18         plotROC_2.2.1        
+##  [4] gvlma_1.0.0.3         sandwich_2.5-1        lmtest_0.9-37        
+##  [7] zoo_1.8-6             vegan_2.5-6           permute_0.9-5        
+## [10] devtools_2.2.1        usethis_1.5.1         forcats_0.4.0        
+## [13] stringr_1.4.0         dplyr_0.8.3           purrr_0.3.3          
+## [16] readr_1.3.1           tidyr_1.0.0           tibble_2.1.3         
+## [19] ggplot2_3.2.1         tidyverse_1.3.0       knitr_1.26           
+## [22] fivethirtyeight_0.5.0 latticeExtra_0.6-28   RColorBrewer_1.1-2   
+## [25] lattice_0.20-38      
+## 
+## loaded via a namespace (and not attached):
+##  [1] nlme_3.1-142      fs_1.3.1          lubridate_1.7.4   httr_1.4.1       
+##  [5] rprojroot_1.3-2   tools_3.6.1       backports_1.1.5   utf8_1.1.4       
+##  [9] R6_2.4.1          DBI_1.0.0         lazyeval_0.2.2    mgcv_1.8-31      
+## [13] colorspace_1.4-1  withr_2.1.2       tidyselect_0.2.5  prettyunits_1.0.2
+## [17] processx_3.4.1    compiler_3.6.1    cli_1.1.0         rvest_0.3.5      
+## [21] xml2_1.2.2        desc_1.2.0        labeling_0.3      bookdown_0.16    
+## [25] scales_1.1.0      callr_3.3.2       digest_0.6.23     rmarkdown_1.18   
+## [29] pkgconfig_2.0.3   htmltools_0.4.0   sessioninfo_1.1.1 dbplyr_1.4.2     
+## [33] rlang_0.4.2       readxl_1.3.1      rstudioapi_0.10   farver_2.0.1     
+## [37] shape_1.4.4       generics_0.0.2    jsonlite_1.6      magrittr_1.5     
+## [41] fansi_0.4.0       Rcpp_1.0.3        munsell_0.5.0     lifecycle_0.1.0  
+## [45] stringi_1.4.3     yaml_2.2.0        MASS_7.3-51.4     plyr_1.8.4       
+## [49] pkgbuild_1.0.6    grid_3.6.1        parallel_3.6.1    crayon_1.3.4     
+## [53] haven_2.2.0       splines_3.6.1     hms_0.5.2         zeallot_0.1.0    
+## [57] ps_1.3.0          pillar_1.4.2      codetools_0.2-16  pkgload_1.0.2    
+## [61] reprex_0.3.0      glue_1.3.1        evaluate_0.14     blogdown_0.17    
+## [65] remotes_2.1.0     modelr_0.1.5      foreach_1.4.7     vctrs_0.2.0      
+## [69] testthat_2.3.1    cellranger_1.1.0  gtable_0.3.0      assertthat_0.2.1 
+## [73] xfun_0.11         broom_0.5.2       iterators_1.0.12  memoise_1.1.0    
+## [77] cluster_2.1.0     ellipsis_0.3.0&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;2019-12-14 05:27:30 CST&amp;quot;&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##                                                                                            sysname 
+##                                                                                           &amp;quot;Darwin&amp;quot; 
+##                                                                                            release 
+##                                                                                           &amp;quot;19.0.0&amp;quot; 
+##                                                                                            version 
+## &amp;quot;Darwin Kernel Version 19.0.0: Thu Oct 17 16:17:15 PDT 2019; root:xnu-6153.41.3~29/RELEASE_X86_64&amp;quot; 
+##                                                                                           nodename 
+##                                                                            &amp;quot;Tus-MacBook-Pro.local&amp;quot; 
+##                                                                                            machine 
+##                                                                                           &amp;quot;x86_64&amp;quot; 
+##                                                                                              login 
+##                                                                                             &amp;quot;root&amp;quot; 
+##                                                                                               user 
+##                                                                                     &amp;quot;tuhoang-mac1&amp;quot; 
+##                                                                                     effective_user 
+##                                                                                     &amp;quot;tuhoang-mac1&amp;quot;&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+</description>
+            </item>
+        
+            <item>
+                <title>About Me</title>
+                <link>/about/</link>
+                <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+                
+                <guid>/about/</guid>
+                <description>&lt;p&gt;Hello, my name is Tu Hoang and I am a Senior BSA-Biology Student at the University of Texas at Austin. I was born in Vietnam and move to the United States when I was 3 years old. I have lived in Houston ever since and could not asked for a better city to live in than the Bayou City. I am a first generation college student and just counting down the days until I graduate.&lt;/p&gt;
+&lt;p&gt;When it comes to education, I graduated from Benjamin O. Davis Sr. High School in Houston in 2016. Four years later, I am close to closing a chapter of my life at the University of Texas at Austin. I always had a passion for the sciences and mathematics. For this reason, I pursued a degree in Biology. After I graduate, I plan to go back to school in order to get a master and then hopefully a PhD in the sciences so I could spread the knowledges I gained throughout my educational journey to others.&lt;/p&gt;
+&lt;p&gt;As for working experience and skills, I consider myself above average when it comes to the technologies or anything having to deal with computer. I am currently an Assistant Coordinator for the Teaching Assistant Program and as well as an Assistant System Administrator at my Local Parish in Houston.&lt;/p&gt;
+</description>
+            </item>
+        
+    </channel>
+</rss>
